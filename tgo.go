@@ -24,6 +24,7 @@ import (
 // needed by most of the application.
 type TGOApp struct {
 	UhuraURL      string
+	State         int
 	LogFile       *os.File
 	Port          int  // What port are we listening on
 	Debug         bool // Debug mode -- show ulog messages on screen
@@ -89,5 +90,6 @@ func main() {
 	case Tgo.IntFuncTest:
 		IntFuncTest0()
 	default:
+		InitiateStateMachine()
 	}
 }

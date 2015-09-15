@@ -31,3 +31,15 @@ coverage:
 	go test -coverprofile=c.out
 	go tool cover -func=c.out
 	go tool cover -html=c.out
+
+package: clean tgo
+	rm -rf ./tmp/tgo ./tmp/tgo.tar*
+	mkdir -p ./tmp/tgo
+	cp tgo ./tmp/tgo
+	cp activate.* ./tmp/tgo
+	cd ./tmp/tgo;/usr/local/accord/testtools/makephonehome.sh
+	cd ./tmp;tar cvf tgo.tar tgo;gzip tgo.tar
+
+publish: package
+	cd ./tmp;deployfile.sh tgo.tar.gz jenkins-snapshot/tgo/latest
+
