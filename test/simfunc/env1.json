@@ -1,0 +1,33 @@
+{
+    "EnvName": "My Test Environment",
+    "Instances": [
+	{
+	    "InstName": "MainWinInstance",
+	    "OS":       "Windows",
+	    "Count":    1,
+	    "Apps": [
+	        {
+	    		"UID": "wprog2",
+	        	"Name": "getfile.sh",
+	        	"Repo": "ext-tools/utils",
+	    		"UPort": 8081,
+	        	"IsTest": true
+	        }
+	    ]  
+	},
+	{
+	    "InstName": "MainTestInstance",
+	    "OS":       "Linux",
+	    "Count":    1,
+	    "Apps": [
+	    	{
+	    		"UID": "prog2",
+	    		"Name": "mytest",
+	    		"Repo": "ext-tools/utils",
+	    		"UPort": 8082,
+	    		"IsTest": false
+	    	}
+	    ]
+	}
+    ]
+} 
