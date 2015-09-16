@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"time"
 )
@@ -20,6 +19,8 @@ var tests = []cft{
 	// test#  http	StatusMsg								          Expected StatusReply
 	cft{1, 200, StatusMsg{"INIT", "MainTestInstance", "wprog2", "x"}, StatusReply{"x", RespNoSuchInstance, "x"}},
 	cft{1, 200, StatusMsg{"YACK", "MainTestInstance", "prog2", "x"}, StatusReply{"x", InvalidState, "x"}},
+	cft{1, 200, StatusMsg{"YACK", "MainWinInstance", "prog2", "x"}, StatusReply{"x", RespNoSuchInstance, "x"}},
+	cft{1, 200, StatusMsg{"ARGH", "MainWinInstance", "wprog2", "x"}, StatusReply{"x", InvalidState, "x"}},
 	cft{1, 200, StatusMsg{"INIT", "MainTestInstance", "prog2", "x"}, StatusReply{"x", RespOK, "x"}},
 	cft{1, 200, StatusMsg{"INIT", "MainWinInstance", "wprog2", "x"}, StatusReply{"x", RespOK, "x"}},
 	cft{1, 200, StatusMsg{"READY", "MainTestInstance", "prog2", "x"}, StatusReply{"x", RespOK, "x"}},
@@ -46,15 +47,16 @@ func IntFuncTest0() int {
 		// Verify response
 		if rc != tests[i].httpResp {
 			ulog("Bad HTTP response code.  Expected %d,  got %d\n", tests[i].httpResp, rc)
+			ulog("test %d FAILED\n", i)
 			testFailCount++
-			break
-		}
-		if r.ReplyCode != tests[i].ur.ReplyCode {
+		} else if r.ReplyCode != tests[i].ur.ReplyCode {
 			ulog("Bad ReplyCode.  Expected %d,  got %d\n", tests[i].ur.ReplyCode, r.ReplyCode)
+			ulog("test %d FAILED\n", i)
 			testFailCount++
-			break
+		} else {
+			ulog("test %d PASSED\n", i)
 		}
-		fmt.Printf("test %d PASSED\n", i)
 	}
+	ulog("%d tests passed, %d tests failed\n", len(tests)-testFailCount, testFailCount)
 	return testFailCount
 }

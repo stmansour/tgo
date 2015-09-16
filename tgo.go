@@ -79,6 +79,7 @@ func main() {
 		log.Fatalf("error opening file: %v", err)
 	}
 	defer Tgo.LogFile.Close()
+	log.SetOutput(Tgo.LogFile)
 
 	// OK, now on with the show...
 	processCommandLine()
@@ -88,7 +89,8 @@ func main() {
 
 	switch {
 	case Tgo.IntFuncTest:
-		IntFuncTest0()
+		errcount := IntFuncTest0()
+		ulog("IntFuncTest0 error count: %d\n", errcount)
 	default:
 		InitiateStateMachine()
 	}

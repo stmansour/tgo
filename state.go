@@ -14,6 +14,15 @@ const (
 	STATE_Done
 )
 
+func dPrintStatusReply(r *StatusReply) {
+	if Tgo.Debug {
+		ulog("Status Reply = %+v\n", *r)
+	}
+	if Tgo.DebugToScreen {
+		fmt.Printf("Status Reply = %+v\n", *r)
+	}
+}
+
 func StateInit() {
 
 }
@@ -47,6 +56,7 @@ func InitiateStateMachine() {
 
 	if r.ReplyCode != RespOK {
 		ulog("Uhura is not happy:  response to status: %d\n", r.ReplyCode)
+		dPrintStatusReply(&r)
 		os.Exit(1)
 	}
 	fmt.Printf("WE SUCCESSFULLY CONTACTED UHURA AND GOT A REPLY\n")

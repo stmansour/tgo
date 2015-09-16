@@ -7,7 +7,7 @@ UPORT=8123
 SCRIPTLOG="state_test1_script.log"
 UVERBOSE=
 UDRYRUN="-n"
-ENV_DESCR="env1.json"
+ENV_DESCR="simfunc.json"
 
 shutdown() {
 	bash ${TOOLS_DIR}/uhura_shutdown.sh -p {$UPORT} >>${SCRIPTLOG} 2>&1
@@ -57,7 +57,9 @@ ${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e ${ENV_DESCR} >uhura.
 sleep 1
 
 echo "http://localhost:${UPORT}/" >phonehome
-../../tgo -d -F
-
+../../tgo -d -F -D
+ERRS=$(grep "IntFuncTest0 error count: " tgo.log)
+ERRCOUNT=${ERRS: -2}
+echo "ERRCOUNT = ${ERRCOUNT}"
 shutdown
-echo "uhura normal shutdown"
+exit ${ERRCOUNT}

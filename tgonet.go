@@ -25,9 +25,9 @@ type StatusReply struct {
 }
 
 const (
-	RespOK = iota
-	RespNoSuchInstance
-	InvalidState
+	RespOK             = iota // 0
+	RespNoSuchInstance        // 1
+	InvalidState              // 2
 )
 
 // PostStatus is used to send a status message to uhura

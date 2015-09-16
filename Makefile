@@ -30,7 +30,7 @@ coverage:
 	go tool cover -func=c.out
 	go tool cover -html=c.out
 
-package: clean tgo
+package: tgo
 	rm -rf ./tmp/tgo ./tmp/tgo.tar*
 	mkdir -p ./tmp/tgo
 	cp tgo ./tmp/tgo
