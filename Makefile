@@ -16,15 +16,13 @@ tgo: *.go
 clean:
 	go clean
 	rm -f *.json *.out *.log qmstr* phonehome
+	cd test;make clean
 	@echo "*** CLEAN COMPLETE ***"
 
 test:
 	@echo "http://localhost:8123/" >phonehome
 	go test
-	@cp test/simfunc/env1.json /tmp/;/usr/local/accord/bin/uhura -p 8123 -e /tmp/env1.json >uhura.out 2>&1 &
-	sleep 1
-	./tgo -d -F
-	@RET=`/usr/local/accord/testtools/uhura_shutdown.sh -p 8123`;echo "uhura normal shutdown"
+	cd test;make test
 	@echo "*** TEST COMPLETE - ALL TESTS PASSED ***"
 
 coverage:
