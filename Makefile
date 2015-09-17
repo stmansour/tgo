@@ -35,7 +35,6 @@ package: tgo
 	mkdir -p ./tmp/tgo
 	cp tgo ./tmp/tgo
 	cp activate.* ./tmp/tgo
-	cd ./tmp/tgo;/usr/local/accord/testtools/makephonehome.sh
 	cd ./tmp;tar cvf tgo.tar tgo;gzip tgo.tar
 
 publish: package
