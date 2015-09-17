@@ -1,12 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 )
 
 //  This is the TGO program. The Task Group Organizer.
@@ -23,7 +23,6 @@ import (
 // application. It holds many basic but critical values
 // needed by most of the application.
 type TGOApp struct {
-	UhuraURL      string
 	State         int
 	LogFile       *os.File
 	Port          int  // What port are we listening on
@@ -35,6 +34,12 @@ type TGOApp struct {
 // Tgo is the instance of TGOApp for this application
 var Tgo TGOApp
 
+// OK, this is a major cop-out, but not sure what else to do...
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
 func processCommandLine() {
 	dbugPtr := flag.Bool("d", false, "debug mode - includes debug info in logfile")
 	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
@@ -45,18 +50,58 @@ func processCommandLine() {
 	Tgo.IntFuncTest = *itstPtr
 }
 
-func initTgo() {
-	// Read phonehome to find out the address of uhura
-	content, e := ioutil.ReadFile("phonehome")
+func WhoAmI() {
+	filename := "uhura_map.json"
+	ulog("ParseEnvDescriptor - Loading %s\n", filename)
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		ulog("no such file or directory: %s", filename)
+		EnvMap.UhuraURL = "http://localhost:8100/"
+		ulog("assuming test mode: UhuraURL = %s\n", EnvMap.UhuraURL)
+		return
+	}
+
+	content, e := ioutil.ReadFile(filename)
 	if e != nil {
-		ulog("Cannot read phonehome file! Error: %v\n", e)
+		ulog("File error on %s: %#v\n", filename, e)
 		os.Exit(1) // no recovery from this
 	}
-	s := string(content)
+	ulog("%s\n", string(content))
 
-	Tgo.UhuraURL = strings.TrimRight(s, "\n\r")
+	// OK, now we have the json describing the environment in content (a string)
+	// Parse it into an internal data structure...
+	err := json.Unmarshal(content, &EnvMap)
+	if err != nil {
+		ulog("Error unmarshaling Environment Descriptor json: %s\n", err)
+		check(err)
+	}
+	// DPrintEnvDescr("EnvMap after initial parse:")
+	ulog("uhura url: %s\n", EnvMap.UhuraURL)
+
+	// Uhura tells us which instance we are, but it does not look up the app
+	// and tell us which app instance. So we look it up here...
+	var found bool
+	for i := 0; i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
+		if EnvMap.Instances[EnvMap.ThisInst].Apps[i].Name == "tgo" {
+			EnvMap.ThisApp = i
+			found = true
+		}
+	}
+	if !found {
+		ulog("*** NOTICE ***  did not find tgo in uhura_map.json instance %d\n", EnvMap.ThisInst)
+	}
+}
+
+func initTgo() {
+	// // Read phonehome to find out the address of uhura
+	// content, e := ioutil.ReadFile("phonehome")
+	// if e != nil {
+	// 	ulog("Cannot read phonehome file! Error: %v\n", e)
+	// 	os.Exit(1) // no recovery from this
+	// }
+	// s := string(content)
+
 	ulog("**********   T G O   **********\n")
-	ulog("UhuraURL = %s\n", Tgo.UhuraURL)
+	WhoAmI()
 }
 
 // This is uhura's standard loger

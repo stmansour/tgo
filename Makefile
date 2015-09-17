@@ -20,7 +20,7 @@ clean:
 	@echo "*** CLEAN COMPLETE ***"
 
 test:
-	@echo "http://localhost:8123/" >phonehome
+	@echo "http://localhost:8100/" >phonehome
 	go test
 	cd test;make test
 	@echo "*** TEST COMPLETE - ALL TESTS PASSED ***"

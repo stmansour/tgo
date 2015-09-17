@@ -4,10 +4,10 @@
 # that it gets the responses it expects from uhura.
 
 UPORT=8100
-SCRIPTLOG="state_test1_script.log"
+SCRIPTLOG="testlocal.log"
 UVERBOSE=
 UDRYRUN="-n"
-ENV_DESCR="simfunc.json"
+ENV_DESCR="uhura_map.json"
 
 shutdown() {
 	bash ${TOOLS_DIR}/uhura_shutdown.sh -p {$UPORT} >>${SCRIPTLOG} 2>&1
@@ -56,9 +56,7 @@ echo "${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e /tmp/${ENV_DES
 ${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e ${ENV_DESCR} >uhura.out 2>&1 &
 sleep 1
 
-../../tgo -d -F -D
-ERRS=$(grep "IntFuncTest0 error count: " tgo.log)
-ERRCOUNT=${ERRS: -2}
-echo "ERRCOUNT = ${ERRCOUNT}"
+../../tgo -d -D
+
 shutdown
-exit ${ERRCOUNT}
+exit 0

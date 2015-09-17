@@ -14,6 +14,35 @@ const (
 	STATE_Done
 )
 
+type AppDescr struct {
+	UID    string
+	Name   string
+	Repo   string
+	UPort  int
+	IsTest bool
+	State  int
+	RunCmd string
+}
+
+type InstDescr struct {
+	InstName string
+	OS       string
+	HostName string
+	Apps     []AppDescr
+}
+
+type EnvDescr struct {
+	EnvName   string
+	UhuraURL  string
+	UhuraPort int
+	ThisInst  int
+	ThisApp   int // not in uhura's def. This is tgo's index within the Apps array
+	State     int
+	Instances []InstDescr
+}
+
+var EnvMap EnvDescr
+
 func dPrintStatusReply(r *StatusReply) {
 	if Tgo.Debug {
 		ulog("Status Reply = %+v\n", *r)
@@ -24,7 +53,11 @@ func dPrintStatusReply(r *StatusReply) {
 }
 
 func PostStatusAndGetReply(state string, r *StatusReply) {
-	s := StatusMsg{state, "TGOtest", "tgo0", time.Now().Format(time.RFC822)}
+	s := StatusMsg{state,
+		EnvMap.Instances[EnvMap.ThisInst].InstName,
+		EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].UID,
+		time.Now().Format(time.RFC822)}
+
 	rc, e := PostStatus(&s, r)
 	if nil != e {
 		ulog("PostStatus returned error:  %v\n", e)
@@ -33,12 +66,13 @@ func PostStatusAndGetReply(state string, r *StatusReply) {
 
 	if rc != 200 {
 		ulog("Bad HTTP response code: %d\n", rc)
+		os.Exit(3)
 	}
 
 	if r.ReplyCode != RespOK {
 		ulog("Uhura is not happy:  response to status: %d\n", r.ReplyCode)
 		dPrintStatusReply(r)
-		os.Exit(1)
+		os.Exit(4)
 	}
 }
 
@@ -59,7 +93,14 @@ func StateDone() {
 }
 
 func InitiateStateMachine() {
+	WhoAmI()
+	fmt.Printf("I am instance %d, my name is %s, I am app index %d\n",
+		EnvMap.ThisInst, EnvMap.Instances[EnvMap.ThisInst].InstName, EnvMap.ThisApp)
+	fmt.Printf("I will listen for commands on port %d\n",
+		EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].UPort)
+
 	var r StatusReply
 	PostStatusAndGetReply("INIT", &r)
-	fmt.Printf("WE SUCCESSFULLY CONTACTED UHURA AND GOT A REPLY\n")
+	fmt.Printf("I successfully contacted uhura at %s and got a reply\n", EnvMap.UhuraURL)
+
 }

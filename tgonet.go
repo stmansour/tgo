@@ -39,7 +39,7 @@ func PostStatus(sm *StatusMsg, r *StatusReply) (int, error) {
 		ulog("Cannot marshal status struct! Error: %v\n", err)
 		os.Exit(2) // no recovery from this
 	}
-	req, err := http.NewRequest("POST", Tgo.UhuraURL+"status/", bytes.NewBuffer(b))
+	req, err := http.NewRequest("POST", EnvMap.UhuraURL+"status/", bytes.NewBuffer(b))
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

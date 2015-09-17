@@ -68,7 +68,7 @@ func TestSendStatus(t *testing.T) {
 func TgoNetTest(t *testing.T, expectHttpResp int, sm *StatusMsg, urexpect *StatusReply) {
 	ts := httptest.NewServer(http.HandlerFunc(UhuraStatusHandler))
 	defer ts.Close()
-	Tgo.UhuraURL = ts.URL + "/"
+	EnvMap.UhuraURL = ts.URL + "/"
 
 	// Call PostStatus and let's see what we get back
 	var ur StatusReply
