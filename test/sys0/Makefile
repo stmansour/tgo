@@ -4,8 +4,7 @@ all: clean test
 .PHONY:  test
 
 clean:
-	go clean
-	rm -f *.out *.log qmstr*
+	rm -f *.out *.log qmstr* x y
 	@echo "*** CLEAN COMPLETE in test/sys0 ***"
 
 test:

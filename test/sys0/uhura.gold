@@ -1,0 +1,263 @@
+2015/09/17 20:03:03 **********   U H U R A   **********
+2015/09/17 20:03:03 Uhura starting on: http://localhost:8100/
+2015/09/17 20:03:03 Debug logging enabled
+2015/09/17 20:03:03 Current working directory = /usr/local/accord/bin
+2015/09/17 20:03:03 environment descriptor: uhura_map.json
+2015/09/17 20:03:03 Port=8100, Debug=true, DryRun=true
+2015/09/17 20:03:03 ParseEnvDescriptor - Loading uhura_map.json
+2015/09/17 20:03:03 {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8100/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8082,"IsTest":false,"State":0,"RunCmd":""}]}]}
+
+2015/09/17 20:03:03 UEnv after initial parse:
+2015/09/17 20:03:03 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:03 EnvName  : My Test Environment
+2015/09/17 20:03:03 State    : 0 (INIT)
+2015/09/17 20:03:03 UhuraPort: 8100
+2015/09/17 20:03:03 Instances: 1
+2015/09/17 20:03:03     Instance[0]
+2015/09/17 20:03:03 	InstName    : TGOtest
+2015/09/17 20:03:03 	OS          : Linux
+2015/09/17 20:03:03 		HostName   : 
+2015/09/17 20:03:03 	Apps        :
+2015/09/17 20:03:03 		UID         : tgo0
+2015/09/17 20:03:03 		Name        : tgo
+2015/09/17 20:03:03 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:03 		UPort       : 8082
+2015/09/17 20:03:03 		IsTest      : false
+2015/09/17 20:03:03 		State       : 0 (INIT)
+2015/09/17 20:03:03 		RunCmd      : 
+2015/09/17 20:03:03 		--------------
+2015/09/17 20:03:03 exec /usr/local/accord/bin/cr_linux_testenv.sh qmstr-TGOtest.sh /Users/sman/Documents/src/go/src/tgo/test/sys0 -n
+2015/09/17 20:03:04 Status Handler
+2015/09/17 20:03:04 Status Message
+2015/09/17 20:03:04 	State: INIT
+2015/09/17 20:03:04 	InstName: TGOtest
+2015/09/17 20:03:04 	UID: tgo0
+2015/09/17 20:03:04 	Tstamp: 17 Sep 15 20:03 PDT
+2015/09/17 20:03:04 Entering SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 0 (INIT)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 0 (INIT)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 0 (INIT)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 Exiting SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 0 (INIT)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 0 (INIT)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 Status Handler
+2015/09/17 20:03:04 Status Message
+2015/09/17 20:03:04 	State: READY
+2015/09/17 20:03:04 	InstName: TGOtest
+2015/09/17 20:03:04 	UID: tgo0
+2015/09/17 20:03:04 	Tstamp: 17 Sep 15 20:03 PDT
+2015/09/17 20:03:04 Entering SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 0 (INIT)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 0 (INIT)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 1 (READY)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 state changing from INIT to TEST
+2015/09/17 20:03:04 Handle state change to TEST
+2015/09/17 20:03:04 Exiting SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 2 (TEST)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 1 (READY)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 Status Handler
+2015/09/17 20:03:04 Status Message
+2015/09/17 20:03:04 	State: TEST
+2015/09/17 20:03:04 	InstName: TGOtest
+2015/09/17 20:03:04 	UID: tgo0
+2015/09/17 20:03:04 	Tstamp: 17 Sep 15 20:03 PDT
+2015/09/17 20:03:04 Entering SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 2 (TEST)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 1 (READY)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 2 (TEST)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 Exiting SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 2 (TEST)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 2 (TEST)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 Status Handler
+2015/09/17 20:03:04 Status Message
+2015/09/17 20:03:04 	State: DONE
+2015/09/17 20:03:04 	InstName: TGOtest
+2015/09/17 20:03:04 	UID: tgo0
+2015/09/17 20:03:04 	Tstamp: 17 Sep 15 20:03 PDT
+2015/09/17 20:03:04 Entering SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 2 (TEST)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 2 (TEST)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 3 (DONE)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 state change to DONE
+2015/09/17 20:03:04 Handle state change to DONE
+2015/09/17 20:03:04 Exiting SetStatus
+2015/09/17 20:03:04 ----------------------  UEnv  ----------------------
+2015/09/17 20:03:04 EnvName  : My Test Environment
+2015/09/17 20:03:04 State    : 3 (DONE)
+2015/09/17 20:03:04 UhuraPort: 8100
+2015/09/17 20:03:04 Instances: 1
+2015/09/17 20:03:04     Instance[0]
+2015/09/17 20:03:04 	InstName    : TGOtest
+2015/09/17 20:03:04 	OS          : Linux
+2015/09/17 20:03:04 		HostName   : 
+2015/09/17 20:03:04 	Apps        :
+2015/09/17 20:03:04 		UID         : tgo0
+2015/09/17 20:03:04 		Name        : tgo
+2015/09/17 20:03:04 		Repo        : jenkins-snapshot/tgo/latest
+2015/09/17 20:03:04 		UPort       : 8082
+2015/09/17 20:03:04 		IsTest      : false
+2015/09/17 20:03:04 		State       : 3 (DONE)
+2015/09/17 20:03:04 		RunCmd      : 
+2015/09/17 20:03:04 		--------------
+2015/09/17 20:03:04 Shutdown Handler
+2015/09/17 20:03:04 Normal Shutdown

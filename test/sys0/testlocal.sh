@@ -56,7 +56,42 @@ echo "${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e /tmp/${ENV_DES
 ${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e ${ENV_DESCR} >uhura.out 2>&1 &
 sleep 1
 
-../../tgo -d -D
-
+../../tgo -d
 shutdown
+
+#---------------------------------------------------------------------
+#  compare the output logs of previous known-good runs (.gold) to 
+#  the logs produced this run (.log)
+#  use the successive filter model developed in uhura/test/stateflow_normal
+#  The code has been cleaned up here...
+#---------------------------------------------------------------------
+declare -a uhura_filters=(
+	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
+	's/Tstamp: [ 0-3][0-9] [A-Za-z]{3} [0-9][0-9] [0-5][0-9]:[0-5][0-9] [A-Z]{3}/Tstamp: TIMESTAMP/'
+	's/master mode on port [0-9]+/Current working directory = SOMEdirectory/'
+	's/^Current working directory = [\/a-zA-Z0-9]+/master mode on port SOMEPORT/'
+	's/^exec [\/_\.a-zA-Z0-9]+ [\/_\.\-a-zA-Z0-9]+ [\/\._a-zA-Z0-9]+.*/exec SOMEPATH/g'
+	's/^Uhura starting on:.*/URL: somehost:someport/'
+)
+echo "Checking uhura logs"
+cp uhura.gold x
+cp uhura.log y
+for f in "${uhura_filters[@]}"
+do
+	perl -pe "$f" x > x1; mv x1 x
+	perl -pe "$f" y > y1; mv y1 y
+done
+
+UDIFFS=$(diff x y | wc -l)
+if [ ${UDIFFS} -eq 0 ]; then
+	echo "TGO.Sys0 test: PASSED"
+	exit 0
+else
+	echo "TGO.Sys0 test: FAILED:  differences are as follows:"
+	diff x y
+	exit 1
+fi
+
+
+
 exit 0

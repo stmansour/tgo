@@ -95,7 +95,7 @@ func PostStatusAndGetReply(state string, r *StatusReply) {
 
 // Spin through all the apps in this instance
 // Start them up. When they're all in the READY state, signal
-// the orchestrator that we're done and it can move to the READY state
+// the orchestrator that we're done and it can move to the next state
 func StateInit() chan int {
 	c := make(chan int)
 	go func() {
@@ -134,8 +134,8 @@ func StateInit() chan int {
 	return c
 }
 
-// Check on all of our apps.  When they are all in the READY state signal
-// the ordhestrator that we can move to the TEST state.
+// Check on all of our apps.  When all the apps are in the READY
+// state we tell the ordhestrator that we are ready to progress to the next state
 func StateReady() chan int {
 	c := make(chan int)
 	go func() {
@@ -145,10 +145,10 @@ func StateReady() chan int {
 		for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
 			a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
 			// TODO:  call their activate script
-			a.State = STATE_Testing
+			a.State = STATE_Testing // replace this statement with the real code
 		}
 
-		// This tgo app (me) can move the READY state. Now just wait on the rest of the apps
+		// We'll put tgo into testing mode (since it is waiting on test apps )
 		EnvMap.Instances[EnvMap.ThisInst].Apps[me].State = STATE_Testing
 		for {
 			for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
@@ -174,12 +174,49 @@ func StateReady() chan int {
 	return c
 }
 
-func StateTest() {
+// When all the testing apps move to the TEST state, contact the orchestrator to let
+// it know we can move to the next state
+func StateTest() chan int {
+	c := make(chan int)
+	go func() {
+		ulog("Entering StateTest\n")
+		var a *AppDescr
+		me := EnvMap.ThisApp
+		for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
+			a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+			// TODO:  call their activate script
+			a.State = STATE_Done // replace this statement with the real code
+		}
 
+		// This tgo app (me) can move the DONE state. Now just wait on the tests to finish
+		EnvMap.Instances[EnvMap.ThisInst].Apps[me].State = STATE_Done
+		for {
+			for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
+				a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+				// TODO:  call their activate script
+				a.State = STATE_Done // this is a fake statement, just to get the code going
+			}
+
+			count, possible := AppsInState(STATE_Done, true)
+			ulog("%d of %d apps are in STATE_Testing\n", count, possible)
+			if count == possible {
+				c <- 0
+				break
+			}
+
+			time.Sleep(time.Duration(10 * time.Second))
+		}
+
+		//do any cleanup work here, wait for acknowledgement before we exit
+		ulog("Exiting StateTest: %d\n", <-c)
+	}()
+
+	return c
 }
 
+// This may not be necessary
 func StateDone() {
-
+	// nothing to do at the moment
 }
 
 func StateOrchestrator() {
@@ -211,6 +248,16 @@ func StateOrchestrator() {
 
 	PostStatusAndGetReply("TEST", &r) // starting our state machine in the INIT state
 	ulog("Posted TEST status to uhura. ReplyCode: %d\n", r.ReplyCode)
+	c = StateReady()
+	select {
+	case i := <-c:
+		ulog("Orchestrator: StateTest completed:  %d\n", i)
+		c <- 0 // tell the StateInit handler it's ok to exit
+	case <-time.After(30 * time.Minute):
+		ulog("Orchestrator: StateTest has not responded in 5 minutes. Giving up!\n")
+		// TODO:  tell uhura that startup has timed out
+		os.Exit(1)
+	}
 
 	PostStatusAndGetReply("DONE", &r) // starting our state machine in the INIT state
 	ulog("Posted DONE status to uhura. ReplyCode: %d\n", r.ReplyCode)
@@ -219,14 +266,12 @@ func StateOrchestrator() {
 
 func InitiateStateMachine() {
 	WhoAmI()
-
-	fmt.Printf("I am instance %d, my name is %s, I am app index %d\n",
+	ulog("I am instance %d, my name is %s, I am app index %d\n",
 		EnvMap.ThisInst, EnvMap.Instances[EnvMap.ThisInst].InstName, EnvMap.ThisApp)
-	fmt.Printf("I will listen for commands on port %d\n",
+	ulog("I will listen for commands on port %d\n",
 		EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].UPort)
 	EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].State = STATE_Initializing
 	var r StatusReply
 	PostStatusAndGetReply("INIT", &r) // starting our state machine in the INIT state
-	fmt.Printf("I successfully contacted uhura at %s and got a reply\n", EnvMap.UhuraURL)
-	StateOrchestrator() // let the orchestrator handle it from here
+	StateOrchestrator()               // let the orchestrator handle it from here
 }
