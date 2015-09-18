@@ -52,6 +52,23 @@ func dPrintStatusReply(r *StatusReply) {
 	}
 }
 
+// Count the total number of apps in the state requested
+// return the count
+func AppsInState(state int, testsonly bool) (count, possible int) {
+	count = 0
+	possible = 0
+	for i := 0; i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
+		if testsonly && !EnvMap.Instances[EnvMap.ThisInst].Apps[i].IsTest {
+			continue
+		}
+		possible++ // this one contributes to the total possible
+		if EnvMap.Instances[EnvMap.ThisInst].Apps[i].State == state {
+			count++
+		}
+	}
+	return count, possible
+}
+
 func PostStatusAndGetReply(state string, r *StatusReply) {
 	s := StatusMsg{state,
 		EnvMap.Instances[EnvMap.ThisInst].InstName,
@@ -76,18 +93,6 @@ func PostStatusAndGetReply(state string, r *StatusReply) {
 	}
 }
 
-// Count the total number of apps in the state requested
-// return the count
-func AppsInState(state int) int {
-	count := 0
-	for i := 0; i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-		if EnvMap.Instances[EnvMap.ThisInst].Apps[i].State == state {
-			count++
-		}
-	}
-	return count
-}
-
 // Spin through all the apps in this instance
 // Start them up. When they're all in the READY state, signal
 // the orchestrator that we're done and it can move to the READY state
@@ -99,28 +104,74 @@ func StateInit() chan int {
 		me := EnvMap.ThisApp
 		for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
 			a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+			// TODO:  call their activate script to START
 			a.State = STATE_Initializing
-			// TODO:  call their activate script
 		}
 
-		// we're ready and now just waiting on the rest of the apps
+		// This tgo app (me) can move the READY state. Now just wait on the rest of the apps
 		EnvMap.Instances[EnvMap.ThisInst].Apps[me].State = STATE_Ready
+		for {
+			for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
+				a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+				// TODO:  call their activate script
+				a.State = STATE_Ready // this is a fake statement, just to get the code going
+			}
 
-		// TODO: wait for everybody to initialize
-		if len(EnvMap.Instances[EnvMap.ThisInst].Apps) == AppsInState(STATE_Ready) {
-			c <- 0
-		} else {
-			c <- 1
+			count, possible := AppsInState(STATE_Ready, false)
+			ulog("%d of %d apps are in STATE_Ready\n", count, possible)
+			if count == possible {
+				c <- 0
+				break
+			}
+
+			time.Sleep(time.Duration(10 * time.Second))
 		}
 
 		//do any cleanup work here, wait for acknowledgement before we exit
 		ulog("Exiting StateInit: %d\n", <-c)
 	}()
+
 	return c
 }
 
-func StateReady() {
+// Check on all of our apps.  When they are all in the READY state signal
+// the ordhestrator that we can move to the TEST state.
+func StateReady() chan int {
+	c := make(chan int)
+	go func() {
+		ulog("Entering StateReady\n")
+		var a *AppDescr
+		me := EnvMap.ThisApp
+		for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
+			a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+			// TODO:  call their activate script
+			a.State = STATE_Testing
+		}
 
+		// This tgo app (me) can move the READY state. Now just wait on the rest of the apps
+		EnvMap.Instances[EnvMap.ThisInst].Apps[me].State = STATE_Testing
+		for {
+			for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
+				a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+				// TODO:  call their activate script
+				a.State = STATE_Ready // this is a fake statement, just to get the code going
+			}
+
+			count, possible := AppsInState(STATE_Testing, true)
+			ulog("%d of %d apps are in STATE_Testing\n", count, possible)
+			if count == possible {
+				c <- 0
+				break
+			}
+
+			time.Sleep(time.Duration(10 * time.Second))
+		}
+
+		//do any cleanup work here, wait for acknowledgement before we exit
+		ulog("Exiting StateReady: %d\n", <-c)
+	}()
+
+	return c
 }
 
 func StateTest() {
@@ -141,9 +192,28 @@ func StateOrchestrator() {
 	case <-time.After(5 * time.Minute):
 		ulog("Orchestrator: StateInit has not responded in 5 minutes. Giving up!\n")
 		// TODO:  tell uhura that startup has timed out
+		os.Exit(1)
 	}
 
-	// TODO: the rest of the states...
+	var r StatusReply
+	PostStatusAndGetReply("READY", &r) // starting our state machine in the INIT state
+	ulog("Posted READY status to uhura. ReplyCode: %d\n", r.ReplyCode)
+	c = StateReady()
+	select {
+	case i := <-c:
+		ulog("Orchestrator: StateReady completed:  %d\n", i)
+		c <- 0 // tell the StateInit handler it's ok to exit
+	case <-time.After(5 * time.Minute):
+		ulog("Orchestrator: StateReady has not responded in 5 minutes. Giving up!\n")
+		// TODO:  tell uhura that startup has timed out
+		os.Exit(1)
+	}
+
+	PostStatusAndGetReply("TEST", &r) // starting our state machine in the INIT state
+	ulog("Posted TEST status to uhura. ReplyCode: %d\n", r.ReplyCode)
+
+	PostStatusAndGetReply("DONE", &r) // starting our state machine in the INIT state
+	ulog("Posted DONE status to uhura. ReplyCode: %d\n", r.ReplyCode)
 
 }
 
