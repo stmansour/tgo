@@ -25,10 +25,11 @@ import (
 type TGOApp struct {
 	State         int
 	LogFile       *os.File
-	Port          int  // What port are we listening on
-	Debug         bool // Debug mode -- show ulog messages on screen
-	DebugToScreen bool // Send logging info to screen too
-	IntFuncTest   bool // internal functional test mode
+	UhuraComm     chan int // communications from Uhura
+	Port          int      // What port are we listening on
+	Debug         bool     // Debug mode -- show ulog messages on screen
+	DebugToScreen bool     // Send logging info to screen too
+	IntFuncTest   bool     // internal functional test mode
 }
 
 // Tgo is the instance of TGOApp for this application
@@ -50,11 +51,9 @@ func processCommandLine() {
 	Tgo.IntFuncTest = *itstPtr
 }
 
-func WhoAmI() {
-	filename := "uhura_map.json"
-	ulog("ParseEnvDescriptor - Loading %s\n", filename)
+func ReadEnvDescr(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		ulog("no such file or directory: %s", filename)
+		ulog("no such file or directory: %s\n", filename)
 		EnvMap.UhuraURL = "http://localhost:8100/"
 		ulog("assuming test mode: UhuraURL = %s\n", EnvMap.UhuraURL)
 		return
@@ -74,6 +73,12 @@ func WhoAmI() {
 		ulog("Error unmarshaling Environment Descriptor json: %s\n", err)
 		check(err)
 	}
+}
+
+func WhoAmI() {
+	filename := "uhura_map.json"
+	ReadEnvDescr(filename)
+	ulog("ParseEnvDescriptor - Loading %s\n", filename)
 	// DPrintEnvDescr("EnvMap after initial parse:")
 	ulog("uhura url: %s\n", EnvMap.UhuraURL)
 
@@ -102,6 +107,7 @@ func initTgo() {
 
 	ulog("**********   T G O   **********\n")
 	WhoAmI()
+	Tgo.UhuraComm = make(chan int)
 }
 
 // This is uhura's standard loger

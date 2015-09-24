@@ -67,7 +67,7 @@ shutdown
 #---------------------------------------------------------------------
 declare -a uhura_filters=(
 	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
-	's/Tstamp: [ 0-3][0-9] [A-Za-z]{3} [0-9][0-9] [0-5][0-9]:[0-5][0-9] [A-Z]{3}/Tstamp: TIMESTAMP/'
+	's/Tstamp:.*/Tstamp: TIMESTAMP/'
 	's/master mode on port [0-9]+/Current working directory = SOMEdirectory/'
 	's/^Current working directory = [\/a-zA-Z0-9]+/master mode on port SOMEPORT/'
 	's/^exec [\/_\.a-zA-Z0-9]+ [\/_\.\-a-zA-Z0-9]+ [\/\._a-zA-Z0-9]+.*/exec SOMEPATH/g'
@@ -84,14 +84,33 @@ done
 
 UDIFFS=$(diff x y | wc -l)
 if [ ${UDIFFS} -eq 0 ]; then
-	echo "TGO.Sys0 test: PASSED"
-	exit 0
+	echo "PHASE 1: PASSED"
 else
-	echo "TGO.Sys0 test: FAILED:  differences are as follows:"
+	echo "PHASE 1: FAILED:  differences are as follows:"
 	diff x y
 	exit 1
 fi
 
+declare -a tgo_filters=(
+	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
+)
 
+cp tgo.gold v
+cp tgo.log w
+for f in "${tgo_filters[@]}"
+do
+	perl -pe "$f" v > v1; mv v1 v
+	perl -pe "$f" w > w1; mv w1 w
+done
 
+UDIFFS=$(diff w v | wc -l)
+if [ ${UDIFFS} -eq 0 ]; then
+	echo "PHASE 2: PASSED"
+else
+	echo "PHASE2 FAILED:  differences are as follows:"
+	diff x y
+	exit 1
+fi
+
+echo "TGO SIMULATED FUNCTIONAL TESTS PASSED"
 exit 0

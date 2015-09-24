@@ -1,5 +1,9 @@
 {
     "EnvName": "My Test Environment",
+    "UhuraURL":"http://localhost:8100/",
+    "UhuraPort":8100,
+    "ThisInst":0,
+    "State":0,
     "Instances": [
 	{
 	    "InstName": "MainWinInstance",

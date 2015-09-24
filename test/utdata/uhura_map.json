@@ -1,0 +1,1 @@
+{"EnvName":"My Test Environment","UhuraURL":"http://localhost:8100/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8082,"IsTest":false,"State":0,"RunCmd":""}]}]}
