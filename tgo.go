@@ -41,6 +41,7 @@ func check(e error) {
 		panic(e)
 	}
 }
+
 func processCommandLine() {
 	dbugPtr := flag.Bool("d", false, "debug mode - includes debug info in logfile")
 	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
@@ -51,11 +52,11 @@ func processCommandLine() {
 	Tgo.IntFuncTest = *itstPtr
 }
 
-func ReadEnvDescr(filename string) {
+func readEnvDescr(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		ulog("no such file or directory: %s\n", filename)
-		EnvMap.UhuraURL = "http://localhost:8100/"
-		ulog("assuming test mode: UhuraURL = %s\n", EnvMap.UhuraURL)
+		envMap.UhuraURL = "http://localhost:8100/"
+		ulog("assuming test mode: UhuraURL = %s\n", envMap.UhuraURL)
 		return
 	}
 
@@ -68,31 +69,31 @@ func ReadEnvDescr(filename string) {
 
 	// OK, now we have the json describing the environment in content (a string)
 	// Parse it into an internal data structure...
-	err := json.Unmarshal(content, &EnvMap)
+	err := json.Unmarshal(content, &envMap)
 	if err != nil {
 		ulog("Error unmarshaling Environment Descriptor json: %s\n", err)
 		check(err)
 	}
 }
 
-func WhoAmI() {
+func whoAmI() {
 	filename := "uhura_map.json"
-	ReadEnvDescr(filename)
+	readEnvDescr(filename)
 	ulog("ParseEnvDescriptor - Loading %s\n", filename)
-	// DPrintEnvDescr("EnvMap after initial parse:")
-	ulog("uhura url: %s\n", EnvMap.UhuraURL)
+	// DPrintEnvDescr("envMap after initial parse:")
+	ulog("uhura url: %s\n", envMap.UhuraURL)
 
 	// Uhura tells us which instance we are, but it does not look up the app
 	// and tell us which app instance. So we look it up here...
 	var found bool
-	for i := 0; i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-		if EnvMap.Instances[EnvMap.ThisInst].Apps[i].Name == "tgo" {
-			EnvMap.ThisApp = i
+	for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+		if envMap.Instances[envMap.ThisInst].Apps[i].Name == "tgo" {
+			envMap.ThisApp = i
 			found = true
 		}
 	}
 	if !found {
-		ulog("*** NOTICE ***  did not find tgo in uhura_map.json instance %d\n", EnvMap.ThisInst)
+		ulog("*** NOTICE ***  did not find tgo in uhura_map.json instance %d\n", envMap.ThisInst)
 	}
 }
 
@@ -106,7 +107,7 @@ func initTgo() {
 	// s := string(content)
 
 	ulog("**********   T G O   **********\n")
-	WhoAmI()
+	whoAmI()
 	Tgo.UhuraComm = make(chan int)
 }
 

@@ -31,7 +31,8 @@ var tests = []cft{
 	cft{1, 200, StatusMsg{"DONE", "MainWinInstance", "wprog2", "x"}, StatusReply{"x", RespOK, "x"}},
 }
 
-// Runs a bunch of tests against a local uhura
+// IntFuncTest0 sends a number of common commands to a local uhura.
+// There are expected responses for each of these commands. This function
 // returns the number of failed tests.
 func IntFuncTest0() int {
 	var testFailCount int

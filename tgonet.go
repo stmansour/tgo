@@ -18,18 +18,23 @@ type StatusMsg struct {
 	Tstamp   string
 }
 
+// StatusReply represents the structure of information
+// that Uhura returns in response to TGO's status messages.
 type StatusReply struct {
 	Status    string
 	ReplyCode int
 	Timestamp string
 }
 
+// UCommand is the structure of commands that Uhura sends TGO
 type UCommand struct {
 	Command   string
 	CmdCode   int
 	Timestamp string
 }
 
+// RespOK and the rest are meaningful names associated with the
+// StatusReply.ReplyCode that uhura sends TGO
 const (
 	RespOK             = iota // 0
 	RespNoSuchInstance        // 1
@@ -47,7 +52,7 @@ func PostStatus(sm *StatusMsg, r *StatusReply) (int, error) {
 		ulog("Cannot marshal status struct! Error: %v\n", err)
 		os.Exit(2) // no recovery from this
 	}
-	req, err := http.NewRequest("POST", EnvMap.UhuraURL+"status/", bytes.NewBuffer(b))
+	req, err := http.NewRequest("POST", envMap.UhuraURL+"status/", bytes.NewBuffer(b))
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -71,6 +76,7 @@ func PostStatus(sm *StatusMsg, r *StatusReply) (int, error) {
 	return rc, err
 }
 
+// SendReply sends a response back to uhura.
 func SendReply(w http.ResponseWriter, rc int, s string) {
 	w.Header().Set("Content-Type", "application/json")
 	m := StatusReply{Status: s, ReplyCode: rc, Timestamp: time.Now().Format(time.RFC822)}
@@ -83,6 +89,8 @@ func SendReply(w http.ResponseWriter, rc int, s string) {
 	}
 }
 
+// CommsHandler handles any incoming network communication. We
+// only expect to receive commands from Uhura.
 func CommsHandler(w http.ResponseWriter, r *http.Request) {
 	ulog("Comms Handler\n")
 	var s UCommand
@@ -109,15 +117,16 @@ func CommsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Uhura can send a request anytime it wants. It will also
+// UhuraComms sets up the handlers for any commands that Uhura sends this
+// TGO instance. The main thing Uhura contacts us about is to
 // notify us when testing can begin.
 func UhuraComms() {
 	// Set up an http service that listens on our assigned
 	// port for any messages
 	http.HandleFunc("/", CommsHandler)
 	s := fmt.Sprintf(":%d",
-		EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].UPort)
+		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UPort)
 	ulog("UhuraComms http service listening on port: %d\n",
-		EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].UPort)
+		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UPort)
 	go http.ListenAndServe(s, nil)
 }

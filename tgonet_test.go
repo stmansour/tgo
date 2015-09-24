@@ -65,10 +65,10 @@ func TestSendStatus(t *testing.T) {
 }
 
 // Provide a bad instance / uid combination
-func TgoNetTest(t *testing.T, expectHttpResp int, sm *StatusMsg, urexpect *StatusReply) {
+func TgoNetTest(t *testing.T, expectHTTPResponse int, sm *StatusMsg, urexpect *StatusReply) {
 	ts := httptest.NewServer(http.HandlerFunc(UhuraStatusHandler))
 	defer ts.Close()
-	EnvMap.UhuraURL = ts.URL + "/"
+	envMap.UhuraURL = ts.URL + "/"
 
 	// Call PostStatus and let's see what we get back
 	var ur StatusReply
@@ -78,8 +78,8 @@ func TgoNetTest(t *testing.T, expectHttpResp int, sm *StatusMsg, urexpect *Statu
 	}
 
 	// Verify response
-	if httpResp != expectHttpResp {
-		t.Errorf("Bad HTTP response code.  Expected %d,  got %d\n", expectHttpResp, httpResp)
+	if httpResp != expectHTTPResponse {
+		t.Errorf("Bad HTTP response code.  Expected %d,  got %d\n", expectHTTPResponse, httpResp)
 		return
 	}
 	if ur.ReplyCode != urexpect.ReplyCode {

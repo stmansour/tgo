@@ -1,23 +1,23 @@
-2015/09/23 17:41:33 **********   T G O   **********
-2015/09/23 17:41:33 {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8100/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8082,"IsTest":false,"State":0,"RunCmd":""}]}]}
+2015/09/23 20:14:54 **********   T G O   **********
+2015/09/23 20:14:54 {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8100/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8082,"IsTest":false,"State":0,"RunCmd":""}]}]}
 
-2015/09/23 17:41:33 ParseEnvDescriptor - Loading uhura_map.json
-2015/09/23 17:41:33 uhura url: http://localhost:8100/
-2015/09/23 17:41:33 {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8100/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8082,"IsTest":false,"State":0,"RunCmd":""}]}]}
+2015/09/23 20:14:54 ParseEnvDescriptor - Loading uhura_map.json
+2015/09/23 20:14:54 uhura url: http://localhost:8100/
+2015/09/23 20:14:54 {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8100/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8082,"IsTest":false,"State":0,"RunCmd":""}]}]}
 
-2015/09/23 17:41:33 ParseEnvDescriptor - Loading uhura_map.json
-2015/09/23 17:41:33 uhura url: http://localhost:8100/
-2015/09/23 17:41:33 I am instance 0, my name is TGOtest, I am app index 0
-2015/09/23 17:41:33 I will listen for commands on port 8082
-2015/09/23 17:41:33 UhuraComms http service listening on port: 8082
-2015/09/23 17:41:33 Orchestrator: StateInit started
-2015/09/23 17:41:33 Entering StateInit
-2015/09/23 17:41:33 1 of 1 apps are in STATE_Ready
-2015/09/23 17:41:33 Orchestrator: StateInit completed:  0
-2015/09/23 17:41:33 StateInit: exiting 0
-2015/09/23 17:41:33 Posted TEST status to uhura. ReplyCode: 0
-2015/09/23 17:41:33 Entering StateTest
-2015/09/23 17:41:33 0 of 0 apps are in STATE_Testing
-2015/09/23 17:41:33 Orchestrator: StateTest completed:  0
-2015/09/23 17:41:33 StateTest: exiting 0
-2015/09/23 17:41:33 Posted DONE status to uhura. ReplyCode: 0
+2015/09/23 20:14:54 ParseEnvDescriptor - Loading uhura_map.json
+2015/09/23 20:14:54 uhura url: http://localhost:8100/
+2015/09/23 20:14:54 I am instance 0, my name is TGOtest, I am app index 0
+2015/09/23 20:14:54 I will listen for commands on port 8082
+2015/09/23 20:14:54 UhuraComms http service listening on port: 8082
+2015/09/23 20:14:54 Orchestrator: StateInit started
+2015/09/23 20:14:54 Entering StateInit
+2015/09/23 20:14:54 1 of 1 apps are in STATEReady
+2015/09/23 20:14:54 Orchestrator: StateInit completed:  0
+2015/09/23 20:14:54 StateInit: exiting 0
+2015/09/23 20:14:54 Posted TEST status to uhura. ReplyCode: 0
+2015/09/23 20:14:54 Entering StateTest
+2015/09/23 20:14:54 0 of 0 apps are in STATETesting
+2015/09/23 20:14:54 Orchestrator: StateTest completed:  0
+2015/09/23 20:14:54 StateTest: exiting 0
+2015/09/23 20:14:54 Posted DONE status to uhura. ReplyCode: 0

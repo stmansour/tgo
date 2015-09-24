@@ -6,12 +6,15 @@ import (
 	"time"
 )
 
+// STATEUninitialized - STATEDone represent the states through which
+// moves to accomplish its mission -- starting one or more apps and
+// managing them through startup, testing, and shutdown.
 const (
-	STATE_Uninitialized = iota
-	STATE_Initializing
-	STATE_Ready
-	STATE_Testing
-	STATE_Done
+	STATEUninitialized = iota
+	STATEInitializing
+	STATEReady
+	STATETesting
+	STATEDone
 )
 
 const (
@@ -19,7 +22,7 @@ const (
 	cmdSTOP
 )
 
-type AppDescr struct {
+type appDescr struct {
 	UID    string
 	Name   string
 	Repo   string
@@ -29,24 +32,24 @@ type AppDescr struct {
 	RunCmd string
 }
 
-type InstDescr struct {
+type instDescr struct {
 	InstName string
 	OS       string
 	HostName string
-	Apps     []AppDescr
+	Apps     []appDescr
 }
 
-type EnvDescr struct {
+type envDescr struct {
 	EnvName   string
 	UhuraURL  string
 	UhuraPort int
 	ThisInst  int
 	ThisApp   int // not in uhura's def. This is tgo's index within the Apps array
 	State     int
-	Instances []InstDescr
+	Instances []instDescr
 }
 
-var EnvMap EnvDescr
+var envMap envDescr
 
 func dPrintStatusReply(r *StatusReply) {
 	if Tgo.Debug {
@@ -57,27 +60,30 @@ func dPrintStatusReply(r *StatusReply) {
 	}
 }
 
-// Count the total number of apps in the state requested
-// return the count
+// AppsInState will count the total number of apps in the state requested
+// return the count along with the total possible
 func AppsInState(state int, testsonly bool) (count, possible int) {
 	count = 0
 	possible = 0
-	for i := 0; i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-		if testsonly && !EnvMap.Instances[EnvMap.ThisInst].Apps[i].IsTest {
+	for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+		if testsonly && !envMap.Instances[envMap.ThisInst].Apps[i].IsTest {
 			continue
 		}
 		possible++ // this one contributes to the total possible
-		if EnvMap.Instances[EnvMap.ThisInst].Apps[i].State == state {
+		if envMap.Instances[envMap.ThisInst].Apps[i].State == state {
 			count++
 		}
 	}
 	return count, possible
 }
 
+// PostStatusAndGetReply does exactly as the title suggests.
+// TODO: probably need to add some error handling for common
+// http error types where we can retry.
 func PostStatusAndGetReply(state string, r *StatusReply) {
 	s := StatusMsg{state,
-		EnvMap.Instances[EnvMap.ThisInst].InstName,
-		EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].UID,
+		envMap.Instances[envMap.ThisInst].InstName,
+		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UID,
 		time.Now().Format(time.RFC822)}
 
 	rc, e := PostStatus(&s, r)
@@ -98,32 +104,33 @@ func PostStatusAndGetReply(state string, r *StatusReply) {
 	}
 }
 
-// Spin through all the apps in this instance
+// StateInit puts TGO into the INIT state.
+// It will spin through all the apps in this instance
 // Start them up. When they're all in the READY state, signal
 // the orchestrator that we're done and it can move to the next state
 func StateInit() chan int {
 	c := make(chan int)
 	go func() {
 		ulog("Entering StateInit\n")
-		var a *AppDescr
-		me := EnvMap.ThisApp
-		for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-			a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+		var a *appDescr
+		me := envMap.ThisApp
+		for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+			a = &envMap.Instances[envMap.ThisInst].Apps[i]
 			// TODO:  call their activate script to START
-			a.State = STATE_Initializing
+			a.State = STATEInitializing
 		}
 
 		// This tgo app (me) can move the READY state. Now just wait on the rest of the apps
-		EnvMap.Instances[EnvMap.ThisInst].Apps[me].State = STATE_Ready
+		envMap.Instances[envMap.ThisInst].Apps[me].State = STATEReady
 		for {
-			for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-				a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+				a = &envMap.Instances[envMap.ThisInst].Apps[i]
 				// TODO:  call their activate script
-				a.State = STATE_Ready // this is a fake statement, just to get the code going
+				a.State = STATEReady // this is a fake statement, just to get the code going
 			}
 
-			count, possible := AppsInState(STATE_Ready, false)
-			ulog("%d of %d apps are in STATE_Ready\n", count, possible)
+			count, possible := AppsInState(STATEReady, false)
+			ulog("%d of %d apps are in STATEReady\n", count, possible)
 			if count == possible {
 				c <- 0
 				break
@@ -145,25 +152,25 @@ func StateInit() chan int {
 // 	c := make(chan int)
 // 	go func() {
 // 		ulog("Entering StateReady\n")
-// 		var a *AppDescr
-// 		me := EnvMap.ThisApp
-// 		for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-// 			a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+// 		var a *appDescr
+// 		me := envMap.ThisApp
+// 		for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+// 			a = &envMap.Instances[envMap.ThisInst].Apps[i]
 // 			// TODO:  call their activate script
-// 			a.State = STATE_Testing // replace this statement with the real code
+// 			a.State = STATETesting // replace this statement with the real code
 // 		}
 
 // 		// We'll put tgo into testing mode (since it is waiting on test apps )
-// 		EnvMap.Instances[EnvMap.ThisInst].Apps[me].State = STATE_Testing
+// 		envMap.Instances[envMap.ThisInst].Apps[me].State = STATETesting
 // 		for {
-// 			for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-// 				a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+// 			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+// 				a = &envMap.Instances[envMap.ThisInst].Apps[i]
 // 				// TODO:  call their activate script
-// 				a.State = STATE_Ready // this is a fake statement, just to get the code going
+// 				a.State = STATEReady // this is a fake statement, just to get the code going
 // 			}
 
-// 			count, possible := AppsInState(STATE_Testing, true)
-// 			ulog("%d of %d apps are in STATE_Testing\n", count, possible)
+// 			count, possible := AppsInState(STATETesting, true)
+// 			ulog("%d of %d apps are in STATETesting\n", count, possible)
 // 			if count == possible {
 // 				c <- 0
 // 				break
@@ -179,31 +186,30 @@ func StateInit() chan int {
 // 	return c
 // }
 
-// When all the testing apps move to the TEST state, contact the orchestrator to let
-// it know we can move to the next state
+// StateTest puts TGO into the TEST state.
 func StateTest() chan int {
 	c := make(chan int)
 	go func() {
 		ulog("Entering StateTest\n")
-		var a *AppDescr
-		me := EnvMap.ThisApp
-		for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-			a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+		var a *appDescr
+		me := envMap.ThisApp
+		for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+			a = &envMap.Instances[envMap.ThisInst].Apps[i]
 			// TODO:  call their activate script
-			a.State = STATE_Done // replace this statement with the real code
+			a.State = STATEDone // replace this statement with the real code
 		}
 
 		// This tgo app (me) can move the DONE state. Now just wait on the tests to finish
-		EnvMap.Instances[EnvMap.ThisInst].Apps[me].State = STATE_Done
+		envMap.Instances[envMap.ThisInst].Apps[me].State = STATEDone
 		for {
-			for i := 0; i != me && i < len(EnvMap.Instances[EnvMap.ThisInst].Apps); i++ {
-				a = &EnvMap.Instances[EnvMap.ThisInst].Apps[i]
+			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+				a = &envMap.Instances[envMap.ThisInst].Apps[i]
 				// TODO:  call their activate script
-				a.State = STATE_Done // this is a fake statement, just to get the code going
+				a.State = STATEDone // this is a fake statement, just to get the code going
 			}
 
-			count, possible := AppsInState(STATE_Done, true)
-			ulog("%d of %d apps are in STATE_Testing\n", count, possible)
+			count, possible := AppsInState(STATEDone, true)
+			ulog("%d of %d apps are in STATETesting\n", count, possible)
 			if count == possible {
 				c <- 0
 				break
@@ -219,11 +225,14 @@ func StateTest() chan int {
 	return c
 }
 
-// This may not be necessary
+// StateDone puts TGO into the DONE state. This may not be necessary
 func StateDone() {
 	// nothing to do at the moment
 }
 
+// StateOrchestrator manages the states through which TGO
+// progresses. It decides when we need to switch states and makes
+// the change.
 func StateOrchestrator() {
 	var r StatusReply
 	ulog("Orchestrator: StateInit started\n")
@@ -307,13 +316,15 @@ func StateOrchestrator() {
 
 }
 
+// InitiateStateMachine essentially pulls together the mission for this TGO instance
+// and sets it into motion.
 func InitiateStateMachine() {
-	WhoAmI()
+	whoAmI()
 	ulog("I am instance %d, my name is %s, I am app index %d\n",
-		EnvMap.ThisInst, EnvMap.Instances[EnvMap.ThisInst].InstName, EnvMap.ThisApp)
+		envMap.ThisInst, envMap.Instances[envMap.ThisInst].InstName, envMap.ThisApp)
 	ulog("I will listen for commands on port %d\n",
-		EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].UPort)
-	EnvMap.Instances[EnvMap.ThisInst].Apps[EnvMap.ThisApp].State = STATE_Initializing
+		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UPort)
+	envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].State = STATEInitializing
 	var r StatusReply
 	go UhuraComms()                   // handle anything that comes from uhura
 	PostStatusAndGetReply("INIT", &r) // starting our state machine in the INIT state
