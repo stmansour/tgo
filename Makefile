@@ -10,7 +10,7 @@ install: tgo
 tgo: *.go
 	go fmt
 	go vet
-	golint
+	gl=$(which golint);if [ "x${gl}" != "x" ]; then golint; fi
 	go build
 	@echo "*** BUILD COMPLETED ***"
 
