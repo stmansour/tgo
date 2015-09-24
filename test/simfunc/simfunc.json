@@ -1,7 +1,7 @@
 {
     "EnvName": "My Test Environment",
-    "UhuraURL":"http://localhost:8100/",
-    "UhuraPort":8100,
+    "UhuraURL":"http://localhost:8150/",
+    "UhuraPort":8150,
     "ThisInst":0,
     "State":0,
     "Instances": [
@@ -14,7 +14,7 @@
 	    		"UID": "wprog2",
 	        	"Name": "getfile.sh",
 	        	"Repo": "ext-tools/utils",
-	    		"UPort": 8081,
+	    		"UPort": 8152,
 	        	"IsTest": true
 	        }
 	    ]  
@@ -28,7 +28,7 @@
 	    		"UID": "prog2",
 	    		"Name": "mytest",
 	    		"Repo": "ext-tools/utils",
-	    		"UPort": 8082,
+	    		"UPort": 8153,
 	    		"IsTest": false
 	    	}
 	    ]

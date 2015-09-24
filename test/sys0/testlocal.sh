@@ -3,7 +3,7 @@
 # It starts up an uhura and spins through its states. Makes sure
 # that it gets the responses it expects from uhura.
 
-UPORT=8100
+UPORT=8150
 SCRIPTLOG="testlocal.log"
 UVERBOSE=
 UDRYRUN="-n"
@@ -108,7 +108,7 @@ if [ ${UDIFFS} -eq 0 ]; then
 	echo "PHASE 2: PASSED"
 else
 	echo "PHASE2 FAILED:  differences are as follows:"
-	diff x y
+	diff v w
 	exit 1
 fi
 
