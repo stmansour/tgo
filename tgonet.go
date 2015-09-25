@@ -105,16 +105,12 @@ func CommsHandler(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case s.Command == "TESTNOW":
 		SendReply(w, RespOK, "OK")
-		ulog("TESTNOW - point A\n")
 		Tgo.UhuraComm <- s.CmdCode // tell the state machine to proceed
-		ulog("TESTNOW - point B\n")
-		<-Tgo.UhuraComm // wait til the handler says it's ok to proceed
-		ulog("Comms handler received ack. Exiting.")
+		<-Tgo.UhuraComm            // wait til the handler says it's ok to proceed
 	default:
 		ulog("Received unknown cmd from Uhura: %+v", s)
 		SendReply(w, RespBadCmd, "BADCMD")
 	}
-
 }
 
 // UhuraComms sets up the handlers for any commands that Uhura sends this

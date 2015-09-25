@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 )
 
 //  This is the TGO program. The Task Group Organizer.
@@ -98,14 +99,6 @@ func whoAmI() {
 }
 
 func initTgo() {
-	// // Read phonehome to find out the address of uhura
-	// content, e := ioutil.ReadFile("phonehome")
-	// if e != nil {
-	// 	ulog("Cannot read phonehome file! Error: %v\n", e)
-	// 	os.Exit(1) // no recovery from this
-	// }
-	// s := string(content)
-
 	ulog("**********   T G O   **********\n")
 	whoAmI()
 	Tgo.UhuraComm = make(chan int)
@@ -144,6 +137,9 @@ func main() {
 		errcount := IntFuncTest0()
 		ulog("IntFuncTest0 error count: %d\n", errcount)
 	default:
-		InitiateStateMachine()
+		c := make(chan int)                        // a channel to signal us when it's all done
+		InitiateStateMachine(c)                    // initiate and pass in the channel
+		<-c                                        // wait til it's done
+		time.Sleep(time.Duration(1 * time.Second)) // grace period, let everything finish
 	}
 }

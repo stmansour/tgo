@@ -72,6 +72,7 @@ declare -a uhura_filters=(
 	's/^Current working directory = [\/a-zA-Z0-9]+/master mode on port SOMEPORT/'
 	's/^exec [\/_\.a-zA-Z0-9]+ [\/_\.\-a-zA-Z0-9]+ [\/\._a-zA-Z0-9]+.*/exec SOMEPATH/g'
 	's/^Uhura starting on:.*/URL: somehost:someport/'
+	's/replied: \&\{OK 0.*/replied: \&\{OK <SOME_TIMESTAMP>/'
 )
 echo "Checking uhura logs"
 cp uhura.gold x
@@ -83,6 +84,36 @@ do
 done
 
 UDIFFS=$(diff x y | wc -l)
+
+#---------------------------------------------------------------------
+# There is some randomness in where go routines get their timeslice.
+# This results in responses coming into the logs in different sequences.
+# Isolate these, and check to see if they're OK -- that is if they
+# appear in uhura_variants, the list of allowable differences...
+#---------------------------------------------------------------------
+declare -a uhura_variants=(
+	'OK <SOME_TIMESTAMP>'
+	'Tgo response received'
+)
+if [ ${UDIFFS} -gt 0 ]; then
+	diff x y | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >z
+	MISMATCHES=0
+	while read p; do
+		FOUND=0
+		for f in "${uhura_variants[@]}"
+		do
+			if [[ "${p}" =~ "${f}" ]]; then
+				FOUND=1
+			fi
+		done
+		if [ ${FOUND} -eq 0 ]; then
+			echo "ERROR on: ${p}"
+			MISMATCHES=$((MISMATCHES+1))
+		fi
+	done < z
+	UDIFFS=${MISMATCHES}
+fi
+
 if [ ${UDIFFS} -eq 0 ]; then
 	echo "PHASE 1: PASSED"
 else
@@ -93,6 +124,7 @@ fi
 
 declare -a tgo_filters=(
 	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
+	's/Command:TESTNOW CmdCode:0 Timestamp:.*/Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>/'
 )
 
 cp tgo.gold v

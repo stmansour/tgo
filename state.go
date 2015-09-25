@@ -15,6 +15,7 @@ const (
 	STATEReady
 	STATETesting
 	STATEDone
+	STATETerm
 )
 
 const (
@@ -146,45 +147,44 @@ func StateInit() chan int {
 	return c
 }
 
-// // Check on all of our apps.  When all the apps are in the READY
-// // state we tell the ordhestrator that we are ready to progress to the next state
-// func StateReady() chan int {
-// 	c := make(chan int)
-// 	go func() {
-// 		ulog("Entering StateReady\n")
-// 		var a *appDescr
-// 		me := envMap.ThisApp
-// 		for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
-// 			a = &envMap.Instances[envMap.ThisInst].Apps[i]
-// 			// TODO:  call their activate script
-// 			a.State = STATETesting // replace this statement with the real code
-// 		}
+// Check on all of our apps.  When all the apps are in the READY
+// state we tell the ordhestrator that we are ready to progress to the next state
+func StateReady() chan int {
+	c := make(chan int)
+	go func() {
+		ulog("Entering StateReady\n")
+		var a *appDescr
+		me := envMap.ThisApp
+		for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+			a = &envMap.Instances[envMap.ThisInst].Apps[i]
+			// TODO:  call their activate script
+			a.State = STATETesting // replace this statement with the real code
+		}
 
-// 		// We'll put tgo into testing mode (since it is waiting on test apps )
-// 		envMap.Instances[envMap.ThisInst].Apps[me].State = STATETesting
-// 		for {
-// 			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
-// 				a = &envMap.Instances[envMap.ThisInst].Apps[i]
-// 				// TODO:  call their activate script
-// 				a.State = STATEReady // this is a fake statement, just to get the code going
-// 			}
+		// We'll put tgo into testing mode (since it is waiting on test apps )
+		envMap.Instances[envMap.ThisInst].Apps[me].State = STATETesting
+		for {
+			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+				a = &envMap.Instances[envMap.ThisInst].Apps[i]
+				// TODO:  call their activate script
+				a.State = STATEReady // this is a fake statement, just to get the code going
+			}
 
-// 			count, possible := AppsInState(STATETesting, true)
-// 			ulog("%d of %d apps are in STATETesting\n", count, possible)
-// 			if count == possible {
-// 				c <- 0
-// 				break
-// 			}
+			count, possible := AppsInState(STATETesting, true)
+			ulog("%d of %d apps are in STATETesting\n", count, possible)
+			if count == possible {
+				c <- 0
+				break
+			}
+			time.Sleep(time.Duration(10 * time.Second))
+		}
 
-// 			time.Sleep(time.Duration(10 * time.Second))
-// 		}
+		//do any cleanup work here, wait for acknowledgement before we exit
+		ulog("StateReady: exiting %d\n", <-c)
+	}()
 
-// 		//do any cleanup work here, wait for acknowledgement before we exit
-// 		ulog("StateReady: exiting %d\n", <-c)
-// 	}()
-
-// 	return c
-// }
+	return c
+}
 
 // StateTest puts TGO into the TEST state.
 func StateTest() chan int {
@@ -233,12 +233,12 @@ func StateDone() {
 // StateOrchestrator manages the states through which TGO
 // progresses. It decides when we need to switch states and makes
 // the change.
-func StateOrchestrator() {
+func StateOrchestrator(alldone chan int) {
 	var r StatusReply
 	ulog("Orchestrator: StateInit started\n")
-	//############################################
+	//#################################################################################
 	//   INIT
-	//############################################
+	//#################################################################################
 	c := StateInit()
 	select {
 	case i := <-c:
@@ -250,52 +250,53 @@ func StateOrchestrator() {
 		os.Exit(1)
 	}
 
-	//############################################
+	//#################################################################################
 	//   READY
 	// When we enter READY state, there's really
 	// nothing to do except wait for UHURA to send
 	// us a TESTNOW command. Then we start up the
 	// tests.
-	//############################################
-	// ulog("Orchestrator: Entering READY state\n")
-	// PostStatusAndGetReply("READY", &r) // starting our state machine in the INIT state
-	// ulog("Orchestrator: Posted READY status to uhura. ReplyCode: %d\n", r.ReplyCode)
-	// ulog("Orchestrator: Calling StateReady\n")
-	// c = StateReady()
-	// ulog("Orchestrator: waiting for StateReady to reply\n")
-	// select {
-	// case i := <-c:
-	// 	ulog("Orchestrator: StateReady completed:  %d\n", i)
-	// 	c <- 0 // tell the StateInit handler it's ok to exit
-	// case <-time.After(5 * time.Minute):
-	// 	ulog("Orchestrator: StateReady has not responded in 5 minutes. Giving up!\n")
-	// 	// TODO:  tell uhura that startup has timed out
-	// 	os.Exit(1)
-	// }
+	//#################################################################################
+	ulog("Orchestrator: Entering READY state\n")
+	PostStatusAndGetReply("READY", &r) // starting our state machine in the INIT state
+	ulog("Orchestrator: Posted READY status to uhura. ReplyCode: %d\n", r.ReplyCode)
+	ulog("Orchestrator: Calling StateReady\n")
+	c = StateReady()
+	ulog("Orchestrator: waiting for StateReady to reply\n")
+	select {
+	case i := <-c:
+		ulog("Orchestrator: StateReady completed:  %d\n", i)
+		c <- 0 // tell the StateInit handler it's ok to exit
+	case <-time.After(5 * time.Minute):
+		ulog("Orchestrator: StateReady has not responded in 5 minutes. Giving up!\n")
+		// TODO:  tell uhura that startup has timed out
+		os.Exit(1)
+	}
 
-	//############################################
+	//#################################################################################
 	//   TEST
-	//############################################
-	// ulog("Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm\n")
-	// // Before we can begin the test mode, we need to hear back from uhura
-	// // that we can begin testing.
-	// select {
-	// case i := <-Tgo.UhuraComm:
-	// 	ulog("Orchestrator: Comms reports uhura has sent command:  %d\n", i)
-	// 	if i == cmdTESTNOW {
-	// 		ulog("Proceding to state TEST\n")
-	// 	} else {
-	// 		ulog("Unexpected response: %d.  Not sure what to do, so proceeding...\n", i)
-	// 	}
-	// 	ulog("Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm\n")
-	// 	Tgo.UhuraComm <- 0 // tell the HTTP handler it's ok to exit
-	// case <-time.After(30 * time.Minute):
-	// 	ulog("Orchestrator: We have not heard from Uhura in 30 minutes. Giving up!\n")
-	// 	// TODO:  tell uhura that startup has timed out
-	// 	os.Exit(1)
-	// }
+	//#################################################################################
+	ulog("Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm\n")
+	ulog("waiting for Uhura to contact tgo\n")
+	// Before we can begin the test mode, we need to hear back from uhura
+	// that we can begin testing.
+	select {
+	case i := <-Tgo.UhuraComm:
+		ulog("Orchestrator: Comms reports uhura has sent command:  %d\n", i)
+		if i == cmdTESTNOW {
+			ulog("Proceding to state TEST\n")
+		} else {
+			ulog("Unexpected response: %d.  Not sure what to do, so proceeding...\n", i)
+		}
+		ulog("Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm\n")
+		Tgo.UhuraComm <- 0 // tell the HTTP handler it's ok to exit
+	case <-time.After(30 * time.Minute):
+		ulog("Orchestrator: We have not heard from Uhura in 30 minutes. Giving up!\n")
+		// TODO:  tell uhura that startup has timed out
+		os.Exit(1)
+	}
 
-	PostStatusAndGetReply("TEST", &r) // starting our state machine in the INIT state
+	PostStatusAndGetReply("TEST", &r) // Tel UHURA we're moving to the TEST state
 	ulog("Posted TEST status to uhura. ReplyCode: %d\n", r.ReplyCode)
 	c = StateTest()
 	select {
@@ -308,17 +309,28 @@ func StateOrchestrator() {
 		os.Exit(1)
 	}
 
-	//############################################
+	//#################################################################################
 	//   DONE
-	//############################################
+	//#################################################################################
 	PostStatusAndGetReply("DONE", &r) // starting our state machine in the INIT state
 	ulog("Posted DONE status to uhura. ReplyCode: %d\n", r.ReplyCode)
+
+	//#################################################################################
+	//   TERM
+	//#################################################################################
+	// TODO:  call all apps and tell them to exit
+	//        this is optional because uhura will terminate all instances when it has
+	//        completed or timed out.
+
+	ulog("StateOrchestrator exiting\n")
+
+	alldone <- 1 // we're all done
 
 }
 
 // InitiateStateMachine essentially pulls together the mission for this TGO instance
 // and sets it into motion.
-func InitiateStateMachine() {
+func InitiateStateMachine(alldone chan int) {
 	whoAmI()
 	ulog("I am instance %d, my name is %s, I am app index %d\n",
 		envMap.ThisInst, envMap.Instances[envMap.ThisInst].InstName, envMap.ThisApp)
@@ -328,5 +340,5 @@ func InitiateStateMachine() {
 	var r StatusReply
 	go UhuraComms()                   // handle anything that comes from uhura
 	PostStatusAndGetReply("INIT", &r) // starting our state machine in the INIT state
-	StateOrchestrator()               // let the orchestrator handle it from here
+	go StateOrchestrator(alldone)     // let the orchestrator handle it from here
 }
