@@ -136,6 +136,35 @@ do
 done
 
 UDIFFS=$(diff w v | wc -l)
+
+#---------------------------------------------------------------------
+# Similar randomness as what we encountered in uhura's logs
+#---------------------------------------------------------------------
+
+declare -a tgo_variants=(
+        'Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
+        'Comms Handler'
+        'StateReady: exiting 0'
+)
+if [ ${UDIFFS} -gt 0 ]; then
+        diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >u
+        MISMATCHES=0
+        while read p; do
+                FOUND=0
+                for f in "${tgo_variants[@]}"
+                do  
+                        if [[ "${p}" =~ "${f}" ]]; then
+                                FOUND=1
+                        fi  
+                done
+                if [ ${FOUND} -eq 0 ]; then
+                        echo "ERROR on: ${p}"
+                        MISMATCHES=$((MISMATCHES+1))
+                fi  
+        done < u 
+        UDIFFS=${MISMATCHES}
+fi
+
 if [ ${UDIFFS} -eq 0 ]; then
 	echo "PHASE 2: PASSED"
 else
