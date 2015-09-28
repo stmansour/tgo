@@ -144,7 +144,10 @@ UDIFFS=$(diff w v | wc -l)
 declare -a tgo_variants=(
         'Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
         'Comms Handler'
+        'StateUnknown: exiting 0'
+        'StateInit: exiting 0'
         'StateReady: exiting 0'
+        'Tgo response received'
 )
 if [ ${UDIFFS} -gt 0 ]; then
         diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >u

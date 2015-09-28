@@ -5,7 +5,7 @@ usage() {
     cat << ZZEOF
 
 Usage:   activate.sh [OPTIONS] cmd
-cmd is one of: START | STOP | READY | TEST
+cmd is one of: START | STOP | READY 
 
 OPTIONS
 -p port number on which to listen
@@ -50,16 +50,13 @@ for arg do
 	"START")
 		echo "START tgo"
 		./tgo -d &
-        echo "Started tgo, process id = $!"
+        echo "OK"
 		;;
 	"STOP")
 		echo "STOP"
 		;;
 	"READY")
 		echo "READY"
-		;;
-	"TEST")
-		echo "TEST"
 		;;
 	*)
 		echo "Unrecognized command: $arg"
