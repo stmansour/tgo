@@ -8,7 +8,7 @@ clean:
 	@echo "*** CLEAN COMPLETE in test/func1 ***"
 
 test:	clean
-	pkill echosrv_test
+	M=`ps -ef | grep echosrv | grep -v grep | wc -l`;if [ $M -gt 0 ]; then pkill echosrv; fi
 	cp -r ../../../echosrv/package/echosrv ../../../echosrv/package/echosrv_test ../ 
 	./func.sh
 	@echo "*** TEST COMPLETE - ALL TESTS PASSED in test/func1 ***"
