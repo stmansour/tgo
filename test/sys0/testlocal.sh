@@ -128,6 +128,7 @@ fi
 declare -a tgo_filters=(
 	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
 	's/Command:TESTNOW CmdCode:0 Timestamp:.*/Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>/'
+	's/"UhuraURL":"http:\/\/[^\/]+\//"UhuraURL":"http:\/\/SOMEURL:SOMEPORT\//'
 )
 
 cp tgo.gold v
@@ -151,6 +152,8 @@ declare -a tgo_variants=(
         'StateInit: exiting 0'
         'StateReady: exiting 0'
         'Tgo response received'
+        'Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
+        'Orchestrator: Posted READY status to uhura. ReplyCode: 0'
 )
 if [ ${UDIFFS} -gt 0 ]; then
         diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" |sort | uniq >u
