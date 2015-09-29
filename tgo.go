@@ -53,6 +53,21 @@ func processCommandLine() {
 	Tgo.IntFuncTest = *itstPtr
 }
 
+func loadEnvDescrFromBytes(content []byte) error {
+	ulog("loadEnvDescrFromBytes - content = %s\n", string(content))
+
+	// OK, now we have the json describing the environment in content (a string)
+	// Parse it into an internal data structure...
+	err := json.Unmarshal(content, &envMap)
+	if err != nil {
+		ulog("Error unmarshaling Environment Descriptor json: %s\n", err)
+		return err
+	}
+
+	ulog("loadEnvDescrFromBytes: success\n")
+	return nil
+}
+
 func readEnvDescr(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		ulog("no such file or directory: %s  <<this is not a problem if testing>>\n", filename)
@@ -66,15 +81,7 @@ func readEnvDescr(filename string) {
 		ulog("File error on %s: %#v\n", filename, e)
 		os.Exit(1) // no recovery from this
 	}
-	ulog("%s\n", string(content))
-
-	// OK, now we have the json describing the environment in content (a string)
-	// Parse it into an internal data structure...
-	err := json.Unmarshal(content, &envMap)
-	if err != nil {
-		ulog("Error unmarshaling Environment Descriptor json: %s\n", err)
-		check(err)
-	}
+	loadEnvDescrFromBytes(content) // read in the initial info - points us to uhura
 }
 
 func whoAmI() {
@@ -141,6 +148,7 @@ func main() {
 		errcount := IntFuncTest0()
 		ulog("IntFuncTest0 error count: %d\n", errcount)
 	default:
+		MapRequest()                               // get HostName updates before we get started
 		c := make(chan int)                        // a channel to signal us when it's all done
 		InitiateStateMachine(c)                    // initiate and pass in the channel
 		<-c                                        // wait til it's done

@@ -55,11 +55,10 @@ cp ${ENV_DESCR} /tmp/
 echo "${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e /tmp/${ENV_DESCR} >uhura.out 2>&1 &" >>${SCRIPTLOG} 2>&1
 ${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e ${ENV_DESCR} >outuhura.out 2>&1 &
 echo "Sleeping 2 seconds to give uhura a chance to create its files"
-sleep 2
+sleep 1
 
 ../../tgo -d -D
 
-sleep 1
 shutdown
 
 echo "BEGIN LOGFILE ANALYSIS..."
@@ -101,7 +100,7 @@ declare -a uhura_variants=(
 	'Tgo @ http://localhost:8152/ replied: &{OK <SOME_TIMESTAMP>'
 )
 if [ ${UDIFFS} -gt 0 ]; then
-	diff x y | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >z
+	diff x y | grep "^[<>]" | perl -pe "s/^[<>]//" | sort | uniq >z
 	MISMATCHES=0
 	while read p; do
 		FOUND=0
@@ -153,10 +152,11 @@ declare -a tgo_variants=(
         'StateInit: exiting 0'
         'StateReady: exiting 0'
         'Tgo response received'
+        'os.Stat(../echosrv/activate.sh)'
         'Orchestrator: Posted READY status to uhura. ReplyCode: 0'
 )
 if [ ${UDIFFS} -gt 0 ]; then
-        diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >u
+        diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" |sort | uniq >u
         MISMATCHES=0
         while read p; do
                 FOUND=0

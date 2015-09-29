@@ -96,9 +96,10 @@ declare -a uhura_variants=(
 	'OK <SOME_TIMESTAMP>'
 	'Tgo response received'
 	'Tgo @ http://localhost:8152/ replied: &{OK <SOME_TIMESTAMP>'
+	'Status Handler'
 )
 if [ ${UDIFFS} -gt 0 ]; then
-	diff x y | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >z
+	diff x y | grep "^[<>]" | perl -pe "s/^[<>]//" | sort |uniq >z
 	MISMATCHES=0
 	while read p; do
 		FOUND=0
@@ -152,7 +153,7 @@ declare -a tgo_variants=(
         'Tgo response received'
 )
 if [ ${UDIFFS} -gt 0 ]; then
-        diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >u
+        diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" |sort | uniq >u
         MISMATCHES=0
         while read p; do
                 FOUND=0

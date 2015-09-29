@@ -49,7 +49,7 @@ type envDescr struct {
 	UhuraURL  string
 	UhuraPort int
 	ThisInst  int
-	ThisApp   int // not in uhura's def. This is tgo's index within the Apps array
+	ThisApp   int // not in uhura's def. This is tgo's index within the Apps array. Tgo looks it up
 	State     int
 	Instances []instDescr
 }

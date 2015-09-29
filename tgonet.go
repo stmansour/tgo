@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -43,6 +44,54 @@ const (
 	RespInvalidState          // 4
 )
 
+// MapReq is a request from a tgo to respond with
+// an updated version of the environment descriptor that
+// includes the PublicDNS host names for all instances
+// ThisInst identifies which instance is asking for the map
+type MapReq struct {
+	ThisInst int
+}
+
+// MapRequest sends a request to uhura asking for an updated map
+// (environment description).  When uhura initiates the environment, the
+// publicdns addresses of the instances are not known. Uhura updates its
+// internal definition with the publicdns info for all instances shortly
+// after the instances are all launched. Since it takes several minutes
+// for each instance to "come to life", we can request the updated map
+// now as uhura will have all that info. We may need the publicdns of
+//
+func MapRequest() (int, error) {
+	ulog("MapRequest\n")
+	var m = MapReq{envMap.ThisInst}
+	b, err := json.Marshal(&m)
+	if err != nil {
+		ulog("Cannot marshal MapReq struct! Error: %v\n", err)
+		os.Exit(2) // no recovery from this
+	}
+	req, err := http.NewRequest("POST", envMap.UhuraURL+"map/", bytes.NewBuffer(b))
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		ulog("Cannot Post status message! Error: %v\n", err)
+		return 0, err // ?? maybe there's some retry we can do??
+	}
+	defer resp.Body.Close()
+
+	// pull out the HTTP response code
+	var rc int
+	var more string
+	fmt.Sscanf(resp.Status, "%d %s", &rc, &more)
+
+	content, err := ioutil.ReadAll(resp.Body)
+	if nil != err {
+		ulog("MapRequest: could not ReadAll bytes from resp.Body\n")
+		return rc, err
+	}
+
+	err = loadEnvDescrFromBytes(content)
+	return rc, err
+}
+
 // PostStatus is used to send a status message to uhura
 // returns the HTTP statuscode of the response and the error
 // from the http.POST
@@ -73,6 +122,7 @@ func PostStatus(sm *StatusMsg, r *StatusReply) (int, error) {
 	if err := decoder.Decode(r); err != nil {
 		panic(err)
 	}
+
 	return rc, err
 }
 
