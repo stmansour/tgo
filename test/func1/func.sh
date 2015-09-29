@@ -98,6 +98,7 @@ declare -a uhura_variants=(
 	'Tgo response received'
 	'Status Handler'
 	'Tgo @ http://localhost:8152/ replied: &{OK <SOME_TIMESTAMP>'
+	'Tgo @ http://localhost:8103/ replied: &{OK <SOME_TIMESTAMP>'
 )
 if [ ${UDIFFS} -gt 0 ]; then
 	diff x y | grep "^[<>]" | perl -pe "s/^[<>]//" | sort | uniq >z
@@ -129,6 +130,7 @@ fi
 declare -a tgo_filters=(
 	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
 	's/Command:TESTNOW CmdCode:0 Timestamp:.*/Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>/'
+	's/"UhuraURL":"http:\/\/[^\/]+\//"UhuraURL":"http:\/\/SOMEURL:SOMEPORT\//'
 )
 
 cp tgo.gold v
