@@ -57,6 +57,7 @@ ${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e ${ENV_DESCR} >uhura.
 sleep 1
 
 ../../tgo -d -F -D
+echo "BEGIN LOGFILE ANALYSIS..."
 ERRS=$(grep "IntFuncTest0 error count: " tgo.log)
 ERRCOUNT=${ERRS: -2}
 echo "ERRCOUNT = ${ERRCOUNT}"

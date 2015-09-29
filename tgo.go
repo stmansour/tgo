@@ -55,7 +55,7 @@ func processCommandLine() {
 
 func readEnvDescr(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		ulog("no such file or directory: %s\n", filename)
+		ulog("no such file or directory: %s  <<this is not a problem if testing>>\n", filename)
 		envMap.UhuraURL = "http://localhost:8100/"
 		ulog("assuming test mode: UhuraURL = %s\n", envMap.UhuraURL)
 		return
@@ -80,7 +80,7 @@ func readEnvDescr(filename string) {
 func whoAmI() {
 	filename := "uhura_map.json"
 	readEnvDescr(filename)
-	ulog("ParseEnvDescriptor - Loading %s\n", filename)
+	ulog("readEnvDescr - Loading %s\n", filename)
 	// DPrintEnvDescr("envMap after initial parse:")
 	ulog("uhura url: %s\n", envMap.UhuraURL)
 
@@ -95,6 +95,10 @@ func whoAmI() {
 	}
 	if !found {
 		ulog("*** NOTICE ***  did not find tgo in uhura_map.json instance %d\n", envMap.ThisInst)
+	}
+	ulog("There are %d apps on this instance:\n", len(envMap.Instances[envMap.ThisInst].Apps))
+	for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+		ulog("\t%d. %s\n", i, envMap.Instances[envMap.ThisInst].Apps[i].Name)
 	}
 }
 

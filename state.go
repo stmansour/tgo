@@ -85,10 +85,10 @@ func AppsAtOrBeyondState(state int, testsonly bool) (count, possible int) {
 // PostStatusAndGetReply does exactly as the title suggests.
 // TODO: probably need to add some error handling for common
 // http error types where we can retry.
-func PostStatusAndGetReply(state string, r *StatusReply) {
+func PostStatusAndGetReply(iapp int, state string, r *StatusReply) {
 	s := StatusMsg{state,
 		envMap.Instances[envMap.ThisInst].InstName,
-		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UID,
+		envMap.Instances[envMap.ThisInst].Apps[iapp].UID,
 		time.Now().Format(time.RFC822)}
 
 	rc, e := PostStatus(&s, r)
@@ -113,55 +113,64 @@ func PostStatusAndGetReply(state string, r *StatusReply) {
 // supplied cmd argument. It returns the cmd output as a string.
 func activateCmd(i int, cmd string) string {
 	a := &envMap.Instances[envMap.ThisInst].Apps[i] // convenient handle for the app we're activating
-	filename := fmt.Sprintf("../%s/activate.sh", a.Name)
-	ulog("os.Stat(%s)\n", filename)
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
+	dirname := fmt.Sprintf("../%s", a.Name)
+	if err := os.Chdir(dirname); err != nil {
+		ulog("could not cd to %s:  %v\n", dirname, err)
+	}
+
+	ulog("os.Stat(%s/activate.sh)\n", dirname)
+	if _, err := os.Stat("activate.sh"); os.IsNotExist(err) {
 		// TODO: Report error to uhura
-		ulog("no activation script: %s\n", filename)
+		ulog("no activation script in: %s\n", dirname)
 		return "error - no activation script"
 	}
-	// TODO: cd to cdto
-	out, err := exec.Command("activate.sh", cmd).Output()
+	out, err := exec.Command("./activate.sh", cmd).Output()
 	if err != nil {
 		log.Fatal(err)
 	}
+	os.Chdir("../tgo")
 	return string(out)
 }
 
+// actionAllApps calls the activate.sh script for all Apps (excluding tgo itself)
+// If the result is "OK" then it automatically sends uhura the status for each app.
+func actionAllApps(actCmd string, expect string, stateval int, status string) {
+	me := envMap.ThisApp
+	var errResult = regexp.MustCompile(`^error .*`)
+	for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+		a := &envMap.Instances[envMap.ThisInst].Apps[i] // shorter notation
+		if i == me || a.State >= stateval {             // skip tgo, and any app already at or beyond reqested state
+			continue
+		}
+		filename := fmt.Sprintf("../%s/activate.sh", a.Name) // this is the activation script we'll be hitting
+		retval := activateCmd(i, actCmd)                     // run the command
+		lower := strings.ToLower(retval)                     // see how it went
+		lower = strings.TrimRight(lower, "\n\r")             // remove CR, LF
+		switch {
+		case lower == expect: // if it started ok...
+			ulog("%s %s returns %s\n", filename, actCmd, expect) // update the log...
+			a.State = stateval                                   // and move to the Init state
+			var r StatusReply
+			PostStatusAndGetReply(i, status, &r)
+			// TODO: look at this reply and act on it if necessary
+		case errResult.MatchString(lower): // regexp:  begins with error
+			ulog("%s returns error: %s\n", filename, retval[6:])
+			// TODO: if retryable... keep going, if not, report back BLOCKED
+		default:
+			ulog("*** ERROR: unexpected reply from %s: %s\n", filename, retval)
+		}
+	}
+}
+
 // StateInit puts TGO into the INIT state.
-// It will spin through all the apps in this instance and do an 'activate.sh start'
-// after starting all of the apps and setting all their states to STATEInitializing
-// it writes to the channel telling the StateOrchestrator that it's finished and
-// it's time to change states.
+// 'activate.sh start' all apps
+// set all their states to STATEInitializing
 func StateUnknown() chan int {
 	c := make(chan int)
 	go func() {
 		ulog("Entering StateUnknown\n")
-		var a *appDescr
-		me := envMap.ThisApp
-		var errResult = regexp.MustCompile(`^error .*`)
-
-		// START UP ALL THE APPS
 		ulog("Starting all apps\n")
-		for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
-			a = &envMap.Instances[envMap.ThisInst].Apps[i]       // shorthand for accessing the app
-			a.State = STATEInitializing                          // we're in the Initializing state now
-			filename := fmt.Sprintf("../%s/activate.sh", a.Name) // this is the activation script we'll be hitting
-			retval := activateCmd(i, "start")                    // try to start it
-			lower := strings.ToLower(retval)                     // see how it went
-			switch {
-			case lower == "ok": // if it started ok...
-				ulog("%s returns ok\n", filename) // update the log...
-				a.State = STATEReady              // and move to the READY state
-
-			case errResult.MatchString(lower): // regexp:  begins with error
-				ulog("%s returns error: %s\n", filename, retval[6:])
-				// TODO: if retryable... keep going, if not, report back BLOCKED
-
-			default:
-				ulog("*** ERROR: unexpected reply from %s: %s\n", filename, retval)
-			}
-		}
+		actionAllApps("start", "ok", STATEInitializing, "INIT")
 		c <- 1                                  // we've started each app. we're done
 		ulog("StateUnknown: exiting %d\n", <-c) // no cleanup work to do, just ack and exit
 	}()
@@ -170,84 +179,38 @@ func StateUnknown() chan int {
 }
 
 // StateInit sees TGO through the init state.
-// It will spin through all the apps in this instance and see if they are in the INITializing
-// or READY state. If not, it will wait 10 seconds and try again. If so, it will signal
-// the orchestrator that we're done and it can move to the next state
+// 'activate.sh ready' all apps.
+// For each app that's ready, move it to the INIT state.
+// If all apps are not in the ready state, it will wait 15 seconds and try again.
+// It will stay in this mode forever until all the apps are in the init state or beyond
 func StateInit() chan int {
 	c := make(chan int)
 	go func() {
-		var errResult = regexp.MustCompile(`^error .*`)
-		// This tgo app (me) can move the READY state. Now just wait on the rest of the apps
-		me := envMap.ThisApp
-		envMap.Instances[envMap.ThisInst].Apps[me].State = STATEReady
-
-		// Check each app to see if it's ready...
+		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].State = STATEReady // tgo is READY, just waiting on apps now
 		for {
-			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
-				a := &envMap.Instances[envMap.ThisInst].Apps[i]
-				filename := fmt.Sprintf("../%s/activate.sh", a.Name) // this is the activation script we'll be hitting
-				retval := activateCmd(i, "ready")
-				lower := strings.ToLower(retval)
-				switch {
-				case lower == "ok":
-					ulog("%s returns OK\n", filename)
-					a.State = STATEReady
-
-				case errResult.MatchString(lower): // regexp:  begins with error
-					ulog("%s returns error: %s\n", filename, retval[6:])
-					// TODO: if retryable... keep going, if not, report back BLOCKED
-
-				default:
-					ulog("*** ERROR: unexpected reply from %s: %s\n", filename, retval)
-				}
+			actionAllApps("ready", "ok", STATEInitializing, "INIT")           // activate.sh ready
+			count, possible := AppsAtOrBeyondState(STATEInitializing, false)  // how many are ready or init
+			ulog("%d of %d apps are in STATEInitializing\n", count, possible) // log results
+			if count == possible {                                            // if all are at least in the init state move on
+				c <- 0 // tell StateOrchestrator we're done
+				break  // bust out of the loop
 			}
-
-			count, possible := AppsAtOrBeyondState(STATEInitializing, false)
-			ulog("%d of %d apps are in STATEInitializing\n", count, possible)
-			if count == possible {
-				c <- 0
-				break
-			}
-
-			time.Sleep(time.Duration(15 * time.Second))
+			time.Sleep(time.Duration(15 * time.Second)) // if any of the apps are still UNKNOWN wait and try again
 		}
-
-		//do any cleanup work here, wait for acknowledgement before we exit
-		ulog("StateInit: exiting %d\n", <-c)
+		ulog("StateInit: exiting %d\n", <-c) //do any cleanup work before this point
 	}()
-
 	return c
 }
 
-// Check on all of our apps and look for all of them to be in the READY
-// state. When they are, tell the ordhestrator that we are ready to progress to the next state. If
-// not try doing an activate stop followed by an activate init.
+// 'activate.sh ready' all apps.  They will probably already be in the READY state,
+// but this is the final check. If there were slow starters during the INIT phase
+// they may need the time.
 func StateReady() chan int {
 	c := make(chan int)
 	go func() {
 		ulog("Entering StateReady\n")
-		var errResult = regexp.MustCompile(`^error .*`)
-		var a *appDescr
-		me := envMap.ThisApp
-
 		for {
-			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
-				filename := fmt.Sprintf("../%s/activate.sh", a.Name) // this is the activation script we'll be hitting
-				retval := activateCmd(i, "ready")
-				lower := strings.ToLower(retval)
-				switch {
-				case lower == "ok":
-					ulog("%s returns OK\n", filename)
-					a.State = STATEReady
-
-				case errResult.MatchString(lower): // regexp:  begins with error
-					ulog("%s returns error: %s\n", filename, retval[6:])
-					// TODO: if retryable... keep going, if not, report back BLOCKED
-
-				default:
-					ulog("*** ERROR: unexpected reply from %s: %s\n", filename, retval)
-				}
-			}
+			actionAllApps("ready", "ok", STATEReady, "READY") // activate.sh ready
 			count, possible := AppsAtOrBeyondState(STATEReady, false)
 			ulog("%d of %d apps are in STATETesting\n", count, possible)
 			if count == possible {
@@ -256,11 +219,8 @@ func StateReady() chan int {
 			}
 			time.Sleep(time.Duration(15 * time.Second))
 		}
-
-		//wait for acknowledgement before we exit
-		ulog("StateReady: exiting %d\n", <-c)
+		ulog("StateReady: exiting %d\n", <-c) //do any cleanup work before this point
 	}()
-
 	return c
 }
 
@@ -274,42 +234,57 @@ func StateTest() chan int {
 		me := envMap.ThisApp
 
 		// Start all tests...
-		for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+		for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+			if i == me {
+				continue
+			}
 			a = &envMap.Instances[envMap.ThisInst].Apps[i]
 			if a.IsTest {
 				filename := fmt.Sprintf("../%s/activate.sh", a.Name) // this is the activation script we'll be hitting
 				retval := activateCmd(i, "test")
 				lower := strings.ToLower(retval)
+				lower = strings.TrimRight(lower, "\n\r") // remove CR, LF
 				a.State = STATETesting
 				switch {
 				case lower == "ok":
 					ulog("%s returns OK\n", filename)
+					a.State = STATETesting
+					var r StatusReply
+					PostStatusAndGetReply(i, "TEST", &r)
 
 				case errResult.MatchString(lower): // regexp:  begins with error
 					ulog("%s returns error: %s\n", filename, retval[6:])
 					// TODO: if retryable... keep going, if not, report back BLOCKED
 
 				default:
-					ulog("*** ERROR: unexpected reply from %s: %s\n", filename, retval)
+					ulog("*** ERROR: unexpected reply to 'test' command from %s: %s\n", filename, retval)
 				}
 			} else {
 				a.State = STATETesting
+				var r StatusReply
+				PostStatusAndGetReply(i, "TEST", &r)
 			}
 		}
 
 		// This tgo app (me) can move the DONE state. Now just wait on the tests to finish
 		envMap.Instances[envMap.ThisInst].Apps[me].State = STATEDone
 		for {
-			for i := 0; i != me && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+			for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+				if i == me {
+					continue
+				}
 				a = &envMap.Instances[envMap.ThisInst].Apps[i]
 				if a.IsTest {
 					filename := fmt.Sprintf("../%s/activate.sh", a.Name) // this is the activation script we'll be hitting
 					retval := activateCmd(i, "teststatus")
 					lower := strings.ToLower(retval)
+					lower = strings.TrimRight(lower, "\n\r") // remove CR, LF
 					switch {
 					case lower == "done":
 						ulog("%s returns DONE\n", filename)
 						a.State = STATEDone // replace this statement with the real code
+						var r StatusReply
+						PostStatusAndGetReply(i, "DONE", &r)
 
 					case lower == "testing":
 						// nothing to do, let it keep running
@@ -319,7 +294,7 @@ func StateTest() chan int {
 						// TODO: if retryable... keep going, if not, report back BLOCKED
 
 					default:
-						ulog("*** ERROR: unexpected reply from %s: %s\n", filename, retval)
+						ulog("*** ERROR: unexpected reply to 'teststatus' command from %s: %s\n", filename, retval)
 					}
 				}
 			}
@@ -327,10 +302,21 @@ func StateTest() chan int {
 			count, possible := AppsAtOrBeyondState(STATEDone, true)
 			ulog("%d of %d apps are in STATEDone\n", count, possible)
 			if count == possible {
+				// mark the apps as in the DONE state now...
+				for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+					if i == me {
+						continue
+					}
+					a = &envMap.Instances[envMap.ThisInst].Apps[i]
+					if !a.IsTest {
+						a.State = STATEDone
+						var r StatusReply
+						PostStatusAndGetReply(i, "DONE", &r)
+					}
+				}
 				c <- 0
 				break
 			}
-
 			time.Sleep(time.Duration(10 * time.Second))
 		}
 
@@ -391,8 +377,8 @@ func StateOrchestrator(alldone chan int) {
 	ulog("Orchestrator: Entering StateReady\n")
 	c = StateReady()
 
-	PostStatusAndGetReply("READY", &r) // tell Uhura we're ready
 	ulog("Orchestrator: Posted READY status to uhura. ReplyCode: %d\n", r.ReplyCode)
+	PostStatusAndGetReply(envMap.ThisApp, "READY", &r) // tell Uhura we're ready
 	ulog("Orchestrator: Calling StateReady\n")
 	ulog("Orchestrator: waiting for StateReady to reply\n")
 	select {
@@ -428,7 +414,7 @@ func StateOrchestrator(alldone chan int) {
 		os.Exit(1)
 	}
 
-	PostStatusAndGetReply("TEST", &r) // Tel UHURA we're moving to the TEST state
+	PostStatusAndGetReply(envMap.ThisApp, "TEST", &r) // Tel UHURA we're moving to the TEST state
 	ulog("Posted TEST status to uhura. ReplyCode: %d\n", r.ReplyCode)
 	c = StateTest()
 	select {
@@ -444,7 +430,7 @@ func StateOrchestrator(alldone chan int) {
 	//#################################################################################
 	//   DONE
 	//#################################################################################
-	PostStatusAndGetReply("DONE", &r) // starting our state machine in the INIT state
+	PostStatusAndGetReply(envMap.ThisApp, "DONE", &r) // starting our state machine in the INIT state
 	ulog("Posted DONE status to uhura. ReplyCode: %d\n", r.ReplyCode)
 
 	//#################################################################################
@@ -463,14 +449,14 @@ func StateOrchestrator(alldone chan int) {
 // InitiateStateMachine essentially pulls together the mission for this TGO instance
 // and sets it into motion.
 func InitiateStateMachine(alldone chan int) {
-	whoAmI()
+	//whoAmI()
 	ulog("I am instance %d, my name is %s, I am app index %d\n",
 		envMap.ThisInst, envMap.Instances[envMap.ThisInst].InstName, envMap.ThisApp)
 	ulog("I will listen for commands on port %d\n",
 		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UPort)
 	envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].State = STATEInitializing
 	var r StatusReply
-	go UhuraComms()                   // handle anything that comes from uhura
-	PostStatusAndGetReply("INIT", &r) // starting our state machine in the INIT state
-	go StateOrchestrator(alldone)     // let the orchestrator handle it from here
+	go UhuraComms()                                   // handle anything that comes from uhura
+	PostStatusAndGetReply(envMap.ThisApp, "INIT", &r) // starting our state machine in the INIT state
+	go StateOrchestrator(alldone)                     // let the orchestrator handle it from here
 }

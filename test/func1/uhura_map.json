@@ -1,0 +1,44 @@
+{
+    "EnvName": "Multiple-Instances Test Environment",
+    "Instances": [
+        {
+            "Apps": [
+                {
+                    "IsTest": false,
+                    "Name": "tgo",
+                    "Repo": "jenkins-snapshot/tgo/latest",
+                    "RunCmd": "",
+                    "State": 0,
+                    "UID": "tgo0",
+                    "UPort": 8103
+                },
+                {
+                    "IsTest": false,
+                    "Name": "echosrv",
+                    "Repo": "jenkins-snapshot/echosrv/latest",
+                    "RunCmd": "",
+                    "State": 0,
+                    "UID": "echosrv",
+                    "UPort": 8200
+                },
+                {
+                    "IsTest": true,
+                    "Name": "echosrv_test",
+                    "Repo": "jenkins-snapshot/echosrv_test/latest",
+                    "RunCmd": "",
+                    "State": 0,
+                    "UID": "echosrv_test",
+                    "UPort": 8204
+                }
+            ],
+            "HostName": "",
+            "InstAwsID": "",
+            "InstName": "TGO-0",
+            "OS": "Linux"
+        }
+    ],
+    "State": 0,
+    "ThisInst": 0,
+    "UhuraPort": 8150,
+    "UhuraURL": "http://localhost:8150/"
+}

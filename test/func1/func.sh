@@ -1,13 +1,13 @@
 #!/bin/bash
 # This is a quick functional test simulator for tgo
-# It starts up an uhura and spins through its states. Makes sure
-# that it gets the responses it expects from uhura.
+# It simulates the startup of a test environment with uhura,
+# a client, and a test program.
 
 UPORT=8150
-SCRIPTLOG="testlocal.log"
+SCRIPTLOG="func1_script.log"
 UVERBOSE=
-UDRYRUN="-n"
-ENV_DESCR="uhura_map.json"
+UDRYRUN="-n -k"
+ENV_DESCR="sys2.json"
 
 shutdown() {
 	bash ${TOOLS_DIR}/uhura_shutdown.sh -p {$UPORT} >>${SCRIPTLOG} 2>&1
@@ -53,10 +53,13 @@ fi
 rm -f qm* *.log *.out
 cp ${ENV_DESCR} /tmp/
 echo "${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e /tmp/${ENV_DESCR} >uhura.out 2>&1 &" >>${SCRIPTLOG} 2>&1
-${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e ${ENV_DESCR} >uhura.out 2>&1 &
-sleep 1
+${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e ${ENV_DESCR} >outuhura.out 2>&1 &
+echo "Sleeping 2 seconds to give uhura a chance to create its files"
+sleep 2
 
-../../tgo -d
+../../tgo -d -D
+
+sleep 1
 shutdown
 
 echo "BEGIN LOGFILE ANALYSIS..."
@@ -75,7 +78,6 @@ declare -a uhura_filters=(
 	's/^Uhura starting on:.*/URL: somehost:someport/'
 	's/replied: \&\{OK 0.*/replied: \&\{OK <SOME_TIMESTAMP>/'
 )
-echo "Checking uhura logs"
 cp uhura.gold x
 cp uhura.log y
 for f in "${uhura_filters[@]}"
@@ -95,6 +97,7 @@ UDIFFS=$(diff x y | wc -l)
 declare -a uhura_variants=(
 	'OK <SOME_TIMESTAMP>'
 	'Tgo response received'
+	'Status Handler'
 	'Tgo @ http://localhost:8152/ replied: &{OK <SOME_TIMESTAMP>'
 )
 if [ ${UDIFFS} -gt 0 ]; then
@@ -140,7 +143,7 @@ done
 UDIFFS=$(diff w v | wc -l)
 
 #---------------------------------------------------------------------
-# Similar randomness as what we encountered in uhura's logs
+# Similar randomness as what we encountered in Tgo's logs
 #---------------------------------------------------------------------
 
 declare -a tgo_variants=(
@@ -150,6 +153,7 @@ declare -a tgo_variants=(
         'StateInit: exiting 0'
         'StateReady: exiting 0'
         'Tgo response received'
+        'Orchestrator: Posted READY status to uhura. ReplyCode: 0'
 )
 if [ ${UDIFFS} -gt 0 ]; then
         diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" | uniq >u

@@ -1,0 +1,33 @@
+{
+    "EnvName": "Multiple-Instances Test Environment",
+    "Instances": [
+	{
+	    "InstName": "TGO-0",
+	    "OS":       "Linux",
+	    "Count":    1,
+	    "Apps": [
+	    	{
+	    		"UID": "tgo0",
+	    		"Name": "tgo",
+	    		"Repo": "jenkins-snapshot/tgo/latest",
+	    		"UPort": 8103,
+	    		"IsTest": false
+	    	},
+	    	{
+	    		"UID": "echosrv",
+	    		"Name": "echosrv",
+	    		"Repo": "jenkins-snapshot/echosrv/latest",
+	    		"UPort": 8200,
+	    		"IsTest": false
+	    	},
+	    	{
+	    		"UID": "echosrv_test",
+	    		"Name": "echosrv_test",
+	    		"Repo": "jenkins-snapshot/echosrv_test/latest",
+	    		"UPort": 8204,
+	    		"IsTest": true
+	    	}
+	    ]
+	}
+	]
+} 
