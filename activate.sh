@@ -53,10 +53,22 @@ for arg do
         echo "OK"
 		;;
 	"STOP")
-		echo "STOP"
+		N=$(ps -ef|grep tgo|grep -v grep|wc -l)
+		if [ ${N} -gt 0 ]; then
+			pkill tgo
+			N=$(ps -ef|grep tgo|grep -v grep|wc -l)
+			if [ ${N} -gt 0 ]; then
+				echo "ERROR still ${N} running instances of tgo"
+				exit 0
+			else
+				echo "OK"
+				exit 0
+			fi
+		fi
+		echo "OK"
 		;;
 	"READY")
-		echo "READY"
+		echo "OK"
 		;;
 	*)
 		echo "Unrecognized command: $arg"
