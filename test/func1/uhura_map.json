@@ -25,7 +25,7 @@
                     "IsTest": true,
                     "Name": "echosrv_test",
                     "Repo": "jenkins-snapshot/echosrv_test/latest",
-                    "RunCmd": "",
+                    "RunCmd": "echosrv_test -h {TGO-0.HostName} -p {TGO-0.echosrv.UPort}",
                     "State": 0,
                     "UID": "echosrv_test",
                     "UPort": 8204

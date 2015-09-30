@@ -111,22 +111,55 @@ func PostStatusAndGetReply(iapp int, state string, r *StatusReply) {
 
 // activateCmd execs the supplied instance (only instance index is provided) with the
 // supplied cmd argument. It returns the cmd output as a string.
+/*
+
+prog -h {{InstName.prop}} -p {{InstName.AppName.prop}}
+
+*/
 func activateCmd(i int, cmd string) string {
+	var err error
+	var out []byte
+
 	a := &envMap.Instances[envMap.ThisInst].Apps[i] // convenient handle for the app we're activating
 	dirname := fmt.Sprintf("../%s", a.Name)
 	if err := os.Chdir(dirname); err != nil {
 		ulog("could not cd to %s:  %v\n", dirname, err)
 	}
 
-	ulog("os.Stat(%s/activate.sh)\n", dirname)
-	if _, err := os.Stat("activate.sh"); os.IsNotExist(err) {
-		// TODO: Report error to uhura
-		ulog("no activation script in: %s\n", dirname)
-		return "error - no activation script"
-	}
-	out, err := exec.Command("./activate.sh", cmd).Output()
-	if err != nil {
-		log.Fatal(err)
+	// To launch apps, we will handle the special case where a run command is supplied.
+	// This essentially replaces 'activate.sh start'.  If no command is supplied, then
+	// just use 'activate.sh start'
+	if a.RunCmd != "" && cmd == "start" {
+		cmd := envDescrSub(a.RunCmd)
+		ca := strings.Split(cmd, " ")
+		ulog("os.Stat(%s/%s)\n", dirname, ca[0])
+		if _, err = os.Stat(ca[0]); os.IsNotExist(err) {
+			// TODO: Report error to uhura
+			ulog("no such application %s in %s\n", ca[0], dirname)
+			return "error - run command points to non-existent app"
+		}
+		// Not sure what to do with the running command. We'll start it in a go function
+		go func() {
+			c := exec.Command(ca[0], ca[1:]...)
+			err := c.Start()
+			if err != nil {
+				log.Fatal(err)
+			}
+			ulog("Successfully started: %s\n", cmd)
+			err = c.Wait()
+			ulog("Finished: command %s\n         err returned = %v\n", cmd, err)
+		}()
+	} else {
+		ulog("os.Stat(%s/activate.sh)\n", dirname)
+		if _, err = os.Stat("activate.sh"); os.IsNotExist(err) {
+			// TODO: Report error to uhura
+			ulog("no activation script in: %s\n", dirname)
+			return "error - no activation script"
+		}
+		out, err = exec.Command("./activate.sh", cmd).Output()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	os.Chdir("../tgo")
 	return string(out)

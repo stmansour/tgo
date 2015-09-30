@@ -1,0 +1,61 @@
+{
+    "EnvName": "Multiple-Instances Test Environment",
+    "Instances": [
+        {
+            "HostName": "esrvtest.ec2.amazon.com",
+            "InstAwsID": "",
+            "InstName": "esrvtest",
+            "OS": "Linux",
+            "Apps": [
+                {
+                    "IsTest": false,
+                    "Name": "tgo",
+                    "Repo": "jenkins-snapshot/tgo/latest",
+                    "RunCmd": "",
+                    "State": 0,
+                    "UID": "tgo0",
+                    "UPort": 8103
+                },
+                {
+                    "IsTest": true,
+                    "Name": "echosrv_test",
+                    "Repo": "jenkins-snapshot/echosrv_test/latest",
+                    "RunCmd": "echosrv_test -h {esrv.HostName} -p {esrv.echosrv.UPort}",
+                    "State": 0,
+                    "UID": "echosrv_test",
+                    "UPort": 8204
+                }
+            ]
+        },
+        {
+            "HostName": "esrvmain.ec2.amazon.com",
+            "InstAwsID": "",
+            "InstName": "esrv",
+            "OS": "Linux",
+            "Apps": [
+                {
+                    "IsTest": false,
+                    "Name": "tgo",
+                    "Repo": "jenkins-snapshot/tgo/latest",
+                    "RunCmd": "",
+                    "State": 0,
+                    "UID": "tgo0",
+                    "UPort": 8103
+                },
+                {
+                    "IsTest": false,
+                    "Name": "echosrv",
+                    "Repo": "jenkins-snapshot/echosrv/latest",
+                    "RunCmd": "echosrv",
+                    "State": 0,
+                    "UID": "echosrv",
+                    "UPort": 8200
+                }
+            ]
+        }
+    ],
+    "State": 0,
+    "ThisInst": 0,
+    "UhuraPort": 8150,
+    "UhuraURL": "http://localhost:8150/"
+}
