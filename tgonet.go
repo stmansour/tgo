@@ -151,6 +151,40 @@ func PostStatus(sm *StatusMsg, r *StatusReply) (int, error) {
 	return rc, err
 }
 
+// PostStatusExt is used to send a status message to uhura
+// returns the HTTP statuscode of the response and the error
+// from the http.POST
+func PostStatusExt(sm *StatusMsgExt, r *StatusReply) (int, error) {
+	b, err := json.Marshal(sm)
+	if err != nil {
+		ulog("Cannot marshal status struct! Error: %v\n", err)
+		os.Exit(2) // no recovery from this
+	}
+	req, err := http.NewRequest("POST", envMap.UhuraURL+"status/", bytes.NewBuffer(b))
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		ulog("Cannot Post status message! Error: %v\n", err)
+		return 0, err // ?? maybe there's some retry we can do??
+	}
+	defer resp.Body.Close()
+
+	// pull out the HTTP response code
+	var rc int
+	var more string
+	fmt.Sscanf(resp.Status, "%d %s", &rc, &more)
+
+	// body, _ := ioutil.ReadAll(resp.Body)
+	// ulog("raw reply data: %s\n", string(body))
+	// json.Unmarshal(body, r)
+	decoder := json.NewDecoder(resp.Body)
+	if err := decoder.Decode(r); err != nil {
+		panic(err)
+	}
+
+	return rc, err
+}
+
 // SendReply sends a response back to uhura.
 func SendReply(w http.ResponseWriter, rc int, s string) {
 	w.Header().Set("Content-Type", "application/json")
