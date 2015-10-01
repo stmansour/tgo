@@ -82,42 +82,49 @@ func AppsAtOrBeyondState(state int, testsonly bool) (count, possible int) {
 	return count, possible
 }
 
+// // PostExtendedStatusAndGetReply does exactly as the title suggests.
+// // TODO: probably need to add some error handling for common
+// // http error types where we can retry.
+// func qqPostExtendedStatusAndGetReply(iapp int, state string, r *StatusReply) {
+// 	s := StatusMsg{state,
+// 		envMap.Instances[envMap.ThisInst].InstName,
+// 		envMap.Instances[envMap.ThisInst].Apps[iapp].UID,
+// 		time.Now().Format(time.RFC822)}
+
+// 	rc, e := PostStatus(&s, r)
+// 	if nil != e {
+// 		ulog("PostStatus returned error:  %v\n", e)
+// 		os.Exit(5)
+// 	}
+
+// 	if rc != 200 {
+// 		ulog("Bad HTTP response code: %d\n", rc)
+// 		os.Exit(3)
+// 	}
+
+// 	if r.ReplyCode != RespOK {
+// 		ulog("Uhura is not happy:  response to status: %d\n", r.ReplyCode)
+// 		dPrintStatusReply(r)
+// 		os.Exit(4)
+// 	}
+// }
+
 // PostExtendedStatusAndGetReply does exactly as the title suggests.
 // TODO: probably need to add some error handling for common
 // http error types where we can retry.
-func qqPostExtendedStatusAndGetReply(iapp int, state string, r *StatusReply) {
-	s := StatusMsg{state,
-		envMap.Instances[envMap.ThisInst].InstName,
-		envMap.Instances[envMap.ThisInst].Apps[iapp].UID,
-		time.Now().Format(time.RFC822)}
-
-	rc, e := PostStatus(&s, r)
-	if nil != e {
-		ulog("PostStatus returned error:  %v\n", e)
-		os.Exit(5)
-	}
-
-	if rc != 200 {
-		ulog("Bad HTTP response code: %d\n", rc)
-		os.Exit(3)
-	}
-
-	if r.ReplyCode != RespOK {
-		ulog("Uhura is not happy:  response to status: %d\n", r.ReplyCode)
-		dPrintStatusReply(r)
-		os.Exit(4)
-	}
-}
-
-// PostExtendedStatusAndGetReply does exactly as the title suggests.
-// TODO: probably need to add some error handling for common
-// http error types where we can retry.
-func PostExtendedStatusAndGetReply(iapp int, state string, r *StatusReply) {
+func PostExtendedStatusAndGetReply(iapp int, state string, r *StatusReply, mapname *string, m *map[string]string) {
 	var s StatusMsgExt
 	s.State = state
 	s.InstName = envMap.Instances[envMap.ThisInst].InstName
 	s.UID = envMap.Instances[envMap.ThisInst].Apps[iapp].UID
 	s.Tstamp = time.Now().Format(time.RFC822)
+	if m != nil && mapname != nil {
+		s.KV.Name = *mapname
+		for k, v := range *m {
+			s.KV.KVs = append(s.KV.KVs, KeyVal{k, v})
+			// ulog("EXTENDED STATUS DATA:  %s: %s\n", k, v)
+		}
+	}
 
 	rc, e := PostStatusExt(&s, r)
 	if nil != e {
@@ -221,7 +228,7 @@ func actionAllApps(actCmd string, expect string, stateval int, status string) {
 			ulog("%s %s returns %s\n", filename, actCmd, expect) // update the log...
 			a.State = stateval                                   // and move to the Init state
 			var r StatusReply
-			PostExtendedStatusAndGetReply(i, status, &r)
+			PostExtendedStatusAndGetReply(i, status, &r, nil, nil)
 			// TODO: look at this reply and act on it if necessary
 		case errResult.MatchString(lower): // regexp:  begins with error
 			ulog("%s returns error: %s\n", filename, retval[6:])
@@ -320,7 +327,7 @@ func StateTest() chan int {
 					ulog("%s returns OK\n", filename)
 					a.State = STATETesting
 					var r StatusReply
-					PostExtendedStatusAndGetReply(i, "TEST", &r)
+					PostExtendedStatusAndGetReply(i, "TEST", &r, nil, nil)
 
 				case errResult.MatchString(lower): // regexp:  begins with error
 					ulog("%s returns error: %s\n", filename, retval[6:])
@@ -332,7 +339,7 @@ func StateTest() chan int {
 			} else {
 				a.State = STATETesting
 				var r StatusReply
-				PostExtendedStatusAndGetReply(i, "TEST", &r)
+				PostExtendedStatusAndGetReply(i, "TEST", &r, nil, nil)
 			}
 		}
 
@@ -353,10 +360,13 @@ func StateTest() chan int {
 					case lower == "done":
 						ulog("%s returns DONE\n", filename)
 						// get the test results
-						// retval = activateCmd(i, "testresults")
-						a.State = STATEDone // replace this statement with the real code
+						retval = activateCmd(i, "testresults")
+						m := make(map[string]string)
+						m["testresults"] = retval
 						var r StatusReply
-						PostExtendedStatusAndGetReply(i, "DONE", &r)
+						kvname := "Test Results"
+						PostExtendedStatusAndGetReply(i, "DONE", &r, &kvname, &m)
+						a.State = STATEDone // all done with this test
 
 					case lower == "testing":
 						// nothing to do, let it keep running
@@ -383,7 +393,7 @@ func StateTest() chan int {
 					if !a.IsTest {
 						a.State = STATEDone
 						var r StatusReply
-						PostExtendedStatusAndGetReply(i, "DONE", &r)
+						PostExtendedStatusAndGetReply(i, "DONE", &r, nil, nil)
 					}
 				}
 				c <- 0
@@ -450,7 +460,7 @@ func StateOrchestrator(alldone chan int) {
 	c = StateReady()
 
 	ulog("Orchestrator: Posted READY status to uhura. ReplyCode: %d\n", r.ReplyCode)
-	PostExtendedStatusAndGetReply(envMap.ThisApp, "READY", &r) // tell Uhura we're ready
+	PostExtendedStatusAndGetReply(envMap.ThisApp, "READY", &r, nil, nil) // tell Uhura we're ready
 	ulog("Orchestrator: Calling StateReady\n")
 	ulog("Orchestrator: waiting for StateReady to reply\n")
 	select {
@@ -486,7 +496,7 @@ func StateOrchestrator(alldone chan int) {
 		os.Exit(1)
 	}
 
-	PostExtendedStatusAndGetReply(envMap.ThisApp, "TEST", &r) // Tel UHURA we're moving to the TEST state
+	PostExtendedStatusAndGetReply(envMap.ThisApp, "TEST", &r, nil, nil) // Tel UHURA we're moving to the TEST state
 	ulog("Posted TEST status to uhura. ReplyCode: %d\n", r.ReplyCode)
 	c = StateTest()
 	select {
@@ -502,7 +512,7 @@ func StateOrchestrator(alldone chan int) {
 	//#################################################################################
 	//   DONE
 	//#################################################################################
-	PostExtendedStatusAndGetReply(envMap.ThisApp, "DONE", &r) // starting our state machine in the INIT state
+	PostExtendedStatusAndGetReply(envMap.ThisApp, "DONE", &r, nil, nil) // starting our state machine in the INIT state
 	ulog("Posted DONE status to uhura. ReplyCode: %d\n", r.ReplyCode)
 
 	//#################################################################################
@@ -528,7 +538,7 @@ func InitiateStateMachine(alldone chan int) {
 		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UPort)
 	envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].State = STATEInitializing
 	var r StatusReply
-	go UhuraComms()                                           // handle anything that comes from uhura
-	PostExtendedStatusAndGetReply(envMap.ThisApp, "INIT", &r) // starting our state machine in the INIT state
-	go StateOrchestrator(alldone)                             // let the orchestrator handle it from here
+	go UhuraComms()                                                     // handle anything that comes from uhura
+	PostExtendedStatusAndGetReply(envMap.ThisApp, "INIT", &r, nil, nil) // starting our state machine in the INIT state
+	go StateOrchestrator(alldone)                                       // let the orchestrator handle it from here
 }
