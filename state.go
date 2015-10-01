@@ -128,8 +128,9 @@ func activateCmd(i int, cmd string) string {
 
 	// To launch apps, we will handle the special case where a run command is supplied.
 	// This essentially replaces 'activate.sh start'.  If no command is supplied, then
-	// just use 'activate.sh start'
-	if a.RunCmd != "" && cmd == "start" {
+	// just use 'activate.sh start'.  Also updated for the test command. So this can be
+	// used to replace 'activate.sh test'
+	if a.RunCmd != "" && (cmd == "start" || cmd == "test") {
 		cmd := envDescrSub(a.RunCmd)
 		ca := strings.Split(cmd, " ")
 		ulog("os.Stat(%s/%s)\n", dirname, ca[0])
