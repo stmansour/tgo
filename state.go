@@ -119,6 +119,7 @@ prog -h {{InstName.prop}} -p {{InstName.AppName.prop}}
 func activateCmd(i int, cmd string) string {
 	var err error
 	var out []byte
+	var rsp string
 
 	a := &envMap.Instances[envMap.ThisInst].Apps[i] // convenient handle for the app we're activating
 	dirname := fmt.Sprintf("../%s", a.Name)
@@ -142,14 +143,17 @@ func activateCmd(i int, cmd string) string {
 			return "error - run command points to non-existent app"
 		}
 		// Not sure what to do with the running command. We'll start it in a go function
-		go func() {
-			mycmd := fmt.Sprintf("./%s", ca[0])
-			c := exec.Command(mycmd, ca[1:]...)
-			err := c.Start()
-			if err != nil {
-				log.Fatal(err)
-			}
+		mycmd := fmt.Sprintf("./%s", ca[0])
+		c := exec.Command(mycmd, ca[1:]...)
+		err := c.Start()
+		if err != nil {
+			rsp = fmt.Sprintf("*** Error running %s %v -- error = %v\n", mycmd, ca[1:], err)
+			ulog(rsp)
+		} else {
+			rsp = "OK"
 			ulog("Successfully started: %s\n", cmd)
+		}
+		go func() {
 			err = c.Wait()
 			ulog("Finished: command %s\n         err returned = %v\n", cmd, err)
 		}()
@@ -164,9 +168,10 @@ func activateCmd(i int, cmd string) string {
 		if err != nil {
 			log.Fatal(err)
 		}
+		rsp = string(out)
 	}
 	os.Chdir("../tgo")
-	return string(out)
+	return rsp
 }
 
 // actionAllApps calls the activate.sh script for all Apps (excluding tgo itself)
