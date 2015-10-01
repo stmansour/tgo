@@ -70,8 +70,8 @@ func dPrintStatusReply(r *StatusReply) {
 func AppsAtOrBeyondState(state int, testsonly bool) (count, possible int) {
 	count = 1 // tgo goes through all states, but we skip it in the loop below
 	possible = 1
-	for i := 0; i != envMap.ThisApp && i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
-		if testsonly && !envMap.Instances[envMap.ThisInst].Apps[i].IsTest {
+	for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
+		if i == envMap.ThisApp || (testsonly && !envMap.Instances[envMap.ThisInst].Apps[i].IsTest) {
 			continue
 		}
 		possible++ // this one contributes to the total possible
