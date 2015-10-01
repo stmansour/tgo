@@ -130,7 +130,9 @@ func activateCmd(i int, cmd string) string {
 	// This essentially replaces 'activate.sh start'.  If no command is supplied, then
 	// just use 'activate.sh start'.  Also updated for the test command. So this can be
 	// used to replace 'activate.sh test'
-	if a.RunCmd != "" && (cmd == "start" || cmd == "test") {
+	if a.RunCmd != "" && // special handling if there's a RunCmd and...
+		((cmd == "start" && !a.IsTest) || // either we're starting an app
+			(cmd == "test" && a.IsTest)) { // or we're starting a test
 		cmd := envDescrSub(a.RunCmd)
 		ca := strings.Split(cmd, " ")
 		ulog("os.Stat(%s/%s)\n", dirname, ca[0])
@@ -141,7 +143,8 @@ func activateCmd(i int, cmd string) string {
 		}
 		// Not sure what to do with the running command. We'll start it in a go function
 		go func() {
-			c := exec.Command(ca[0], ca[1:]...)
+			mycmd := fmt.Sprintf("./%s", ca[0])
+			c := exec.Command(mycmd, ca[1:]...)
 			err := c.Start()
 			if err != nil {
 				log.Fatal(err)
