@@ -10,6 +10,19 @@ import (
 	"time"
 )
 
+// KeyVal is a generic key/value pair struct
+type KeyVal struct {
+	Key string
+	Val string
+}
+
+// KVMsg is a named structure of key/value pairs to
+// add to a status message as needed
+type KVMsg struct {
+	Name string
+	KVs  []KeyVal
+}
+
 // StatusMsg is status message structure we use to
 // communicate with uhura.
 type StatusMsg struct {
@@ -17,6 +30,18 @@ type StatusMsg struct {
 	InstName string
 	UID      string
 	Tstamp   string
+}
+
+// StatusMsgExt is status message structure we use to
+// communicate with uhura. It is an extended version
+// of StatusMsg - it includes an arbitrary key/value
+// map at the end
+type StatusMsgExt struct {
+	State    string
+	InstName string
+	UID      string
+	Tstamp   string
+	KV       KVMsg
 }
 
 // StatusReply represents the structure of information
@@ -48,6 +73,7 @@ const (
 // an updated version of the environment descriptor that
 // includes the PublicDNS host names for all instances
 // ThisInst identifies which instance is asking for the map
+// We can extend it as needed :-)
 type MapReq struct {
 	ThisInst int
 }
@@ -59,7 +85,6 @@ type MapReq struct {
 // after the instances are all launched. Since it takes several minutes
 // for each instance to "come to life", we can request the updated map
 // now as uhura will have all that info. We may need the publicdns of
-//
 func MapRequest() (int, error) {
 	ulog("MapRequest\n")
 	var m = MapReq{envMap.ThisInst}

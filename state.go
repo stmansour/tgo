@@ -324,6 +324,9 @@ func StateTest() chan int {
 					switch {
 					case lower == "done":
 						ulog("%s returns DONE\n", filename)
+						// get the test results
+						// retval = activateCmd(i, "testresults")
+
 						a.State = STATEDone // replace this statement with the real code
 						var r StatusReply
 						PostStatusAndGetReply(i, "DONE", &r)

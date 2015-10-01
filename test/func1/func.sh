@@ -62,6 +62,14 @@ sleep 1
 shutdown
 
 echo "BEGIN LOGFILE ANALYSIS..."
+ESTESTS=$(cat ../echosrv_test/testresults.txt)
+if [ "PASS" != ${ESTESTS} ]; then
+	echo "*** ERROR *** echosrv_test results = ${ESTESTS}"
+	echo "PHASE 1 FAILED"
+	exit 1
+fi
+echo "PHASE 1: PASSED"
+
 #---------------------------------------------------------------------
 #  compare the output logs of previous known-good runs (.gold) to 
 #  the logs produced this run (.log)
@@ -120,9 +128,9 @@ if [ ${UDIFFS} -gt 0 ]; then
 fi
 
 if [ ${UDIFFS} -eq 0 ]; then
-	echo "PHASE 1: PASSED"
+	echo "PHASE 2: PASSED"
 else
-	echo "PHASE 1: FAILED:  differences are as follows:"
+	echo "PHASE 2: FAILED:  differences are as follows:"
 	diff x y
 	exit 1
 fi
@@ -177,9 +185,9 @@ if [ ${UDIFFS} -gt 0 ]; then
 fi
 
 if [ ${UDIFFS} -eq 0 ]; then
-	echo "PHASE 2: PASSED"
+	echo "PHASE 3: PASSED"
 else
-	echo "PHASE2 FAILED:  differences are as follows:"
+	echo "PHASE 3 FAILED:  differences are as follows:"
 	diff v w
 	exit 1
 fi
