@@ -5,7 +5,7 @@ all: clean test
 
 clean:
 	go clean
-	rm -f *.out *.log qmstr* phonehome
+	rm -f *.out *.log qmstr* EnvShutdownStatus.json
 	@echo "*** CLEAN COMPLETE in test/simfunc ***"
 
 test:

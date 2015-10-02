@@ -122,7 +122,7 @@ func PostExtendedStatusAndGetReply(iapp int, state string, r *StatusReply, mapna
 		s.KV.Name = *mapname
 		for k, v := range *m {
 			s.KV.KVs = append(s.KV.KVs, KeyVal{k, v})
-			// ulog("EXTENDED STATUS DATA:  %s: %s\n", k, v)
+			ulog("EXTENDED STATUS DATA:  %s: %s\n", k, v)
 		}
 	}
 
@@ -362,7 +362,7 @@ func StateTest() chan int {
 						// get the test results
 						retval = activateCmd(i, "testresults")
 						m := make(map[string]string)
-						m["testresults"] = retval
+						m["testresults"] = strings.Trim(retval, "\n\r")
 						var r StatusReply
 						kvname := "Test Results"
 						PostExtendedStatusAndGetReply(i, "DONE", &r, &kvname, &m)

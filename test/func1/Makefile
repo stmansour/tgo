@@ -4,7 +4,7 @@ all: clean test
 
 clean:
 	go clean
-	rm -f *.out *.log qmstr* [u-z]
+	rm -f *.out *.log qmstr* [u-z] EnvShutdownStatus.json
 	@echo "*** CLEAN COMPLETE in test/func1 ***"
 
 test:	clean
