@@ -4,7 +4,6 @@ all: clean tgo test
 .PHONY:  test
 
 install: tgo
-	cp uhura /usr/local/accord/bin
 	@echo "*** INSTALL COMPLETED ***"
 
 tgo: *.go

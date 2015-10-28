@@ -140,6 +140,7 @@ func main() {
 	// OK, now on with the show...
 	processCommandLine()
 	initTgo()
+	processAppResourceNeeds()
 
 	fmt.Printf("Tgo.IntFuncTest = %v\n", Tgo.IntFuncTest)
 

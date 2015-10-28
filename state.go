@@ -27,6 +27,13 @@ const (
 	cmdSTOP
 )
 
+// AppResourceDescr is a structure of data defining what optional resources
+// each application needs.
+type AppResourceDescr struct {
+	RestoreMySQLdb string // name of file with sql cmds to restore.
+	DBname         string // name of database to restore. Expects to be found int ext-tools/testing
+}
+
 type appDescr struct {
 	UID    string
 	Name   string
@@ -34,14 +41,22 @@ type appDescr struct {
 	UPort  int
 	IsTest bool
 	State  int
+	AppRes AppResourceDescr
 	RunCmd string
 }
 
+// ResourceDescr is a structure of data defining what optional resources
+// each instance needs.
+type InstanceResourceDescr struct {
+	MySQL bool // if true, mysql will be started
+}
+
 type instDescr struct {
-	InstName string
-	OS       string
-	HostName string
-	Apps     []appDescr
+	InstName  string
+	OS        string
+	HostName  string
+	Resources InstanceResourceDescr
+	Apps      []appDescr
 }
 
 type envDescr struct {
