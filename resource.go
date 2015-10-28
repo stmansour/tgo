@@ -7,10 +7,12 @@ import (
 )
 
 func processAppResourceNeeds() {
+	ulog("Entering processAppResourceNeeds\n")
 	for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
 		a := &envMap.Instances[envMap.ThisInst].Apps[i]
 
 		if len(a.AppRes.DBname) > 0 {
+			ulog("App[%d] requests restoredb:  db=%s, file=%s\n", i, a.AppRes.DBname, a.AppRes.RestoreMySQLdb)
 			//-----------------------------------------------------------------
 			// switch to the directory containing the sql commands we need...
 			//-----------------------------------------------------------------
@@ -18,6 +20,7 @@ func processAppResourceNeeds() {
 			if err := os.Chdir(dirname); err != nil {
 				ulog("could not cd to %s:  %v\n", dirname, err)
 			}
+			ulog("cd to %s\n", dirname)
 
 			//-----------------------------------------------------------------
 			// switch to the directory containing the sql commands we need...
@@ -39,6 +42,8 @@ func processAppResourceNeeds() {
 				}
 			}
 
+			ulog("script = %s, args = %+v\n", script, args)
+
 			cmd := exec.Command(script, args...)
 			err = cmd.Start()
 			if err != nil {
@@ -46,9 +51,12 @@ func processAppResourceNeeds() {
 			}
 			cmd.Wait()
 
+			ulog("script ran. no errors reported\n", script, args)
+
 			if err := os.Chdir("../tgo"); err != nil {
-				ulog("could not cd to ../tgo:  %v\n", dirname, err)
+				ulog("could not cd to ../tgo:  %v\n", err)
 			}
+			ulog("cd back to ../tgo\n")
 		}
 	}
 }
