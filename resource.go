@@ -26,7 +26,7 @@ func processAppResourceNeeds() {
 			m := strings.Split(a.AppRes.cmd, " ")
 			c := m[0]
 			args := make([]string, 0)
-			for i := 1; i < len(m[1:]); i++ {
+			for i := 1; i <= len(m[1:]); i++ {
 				args = append(args, m[i])
 			}
 
