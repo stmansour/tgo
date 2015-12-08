@@ -30,8 +30,9 @@ const (
 // AppResourceDescr is a structure of data defining what optional resources
 // each application needs.
 type AppResourceDescr struct {
+	cmd            string // generic command to run
 	RestoreMySQLdb string // name of file with sql cmds to restore.
-	DBname         string // name of database to restore. Expects to be found int ext-tools/testing
+	DBname         string // name of database to restore.
 }
 
 type appDescr struct {
