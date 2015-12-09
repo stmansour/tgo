@@ -12,8 +12,8 @@ func processAppResourceNeeds() {
 	for i := 0; i < len(envMap.Instances[envMap.ThisInst].Apps); i++ {
 		a := &envMap.Instances[envMap.ThisInst].Apps[i]
 
-		if len(a.AppRes.cmd) > 0 {
-			ulog("App[%d] requests cmd: %s\n", i, a.AppRes.cmd)
+		if len(a.AppRes.Cmd) > 0 {
+			ulog("App[%d] requests cmd: %s\n", i, a.AppRes.Cmd)
 			//-----------------------------------------------------------------
 			// switch to the directory containing the app
 			//-----------------------------------------------------------------
@@ -23,7 +23,7 @@ func processAppResourceNeeds() {
 			}
 			ulog("cd to %s\n", dirname)
 
-			m := strings.Split(a.AppRes.cmd, " ")
+			m := strings.Split(a.AppRes.Cmd, " ")
 			c := m[0]
 			args := make([]string, 0)
 			for i := 1; i <= len(m[1:]); i++ {
