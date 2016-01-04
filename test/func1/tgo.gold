@@ -1,5 +1,5 @@
-2015/10/28 08:47:11 **********   T G O   **********
-2015/10/28 08:47:11 loadEnvDescrFromBytes - content = {
+2016/01/04 09:43:40 **********   T G O   **********
+2016/01/04 09:43:40 loadEnvDescrFromBytes - content = {
     "EnvName": "Multiple-Instances Test Environment",
     "Instances": [
         {
@@ -44,62 +44,62 @@
     "UhuraURL": "http://localhost:8150/"
 }
 
-2015/10/28 08:47:11 loadEnvDescrFromBytes: success
-2015/10/28 08:47:11 readEnvDescr - Loading uhura_map.json
-2015/10/28 08:47:11 uhura url: http://localhost:8150/
-2015/10/28 08:47:11 There are 3 apps on this instance:
-2015/10/28 08:47:11 	0. tgo
-2015/10/28 08:47:11 	1. echosrv
-2015/10/28 08:47:11 	2. echosrv_test
-2015/10/28 08:47:11 Entering processAppResourceNeeds
-2015/10/28 08:47:11 MapRequest
-2015/10/28 08:47:11 loadEnvDescrFromBytes - content = {"EnvName":"Multiple-Instances Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGO-0","OS":"Linux","HostName":"localhost","InstAwsID":"","Resources":{"MySQL":false},"Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8103,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv","Name":"echosrv","Repo":"jenkins-snapshot/echosrv/latest","UPort":8200,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv_test","Name":"echosrv_test","Repo":"jenkins-snapshot/echosrv_test/latest","UPort":8204,"IsTest":true,"State":0,"RunCmd":"","AppRes":{"RestoreMySQLdb":"","DBname":""},"KVs":null}]}]}
-2015/10/28 08:47:11 loadEnvDescrFromBytes: success
-2015/10/28 08:47:11 I am instance 0, my name is TGO-0, I am app index 0
-2015/10/28 08:47:11 I will listen for commands on port 8103
-2015/10/28 08:47:11 UhuraComms http service listening on port: 8103
-2015/10/28 08:47:11 Orchestrator: StateUnknown started
-2015/10/28 08:47:11 Entering StateUnknown
-2015/10/28 08:47:11 Starting all apps
-2015/10/28 08:47:11 os.Stat(../echosrv/activate.sh)
-2015/10/28 08:47:11 ../echosrv/activate.sh start returns ok
-2015/10/28 08:47:11 os.Stat(../echosrv_test/activate.sh)
-2015/10/28 08:47:11 ../echosrv_test/activate.sh start returns ok
-2015/10/28 08:47:11 Orchestrator: StateUnknown completed:  1
-2015/10/28 08:47:11 Orchestrator: StateInit started
-2015/10/28 08:47:11 3 of 3 apps are in STATEInitializing
-2015/10/28 08:47:11 Orchestrator: StateInit completed:  0
-2015/10/28 08:47:11 Orchestrator: Entering StateReady
-2015/10/28 08:47:11 Orchestrator: Posted READY status to uhura. ReplyCode: 0
-2015/10/28 08:47:11 StateUnknown: exiting 0
-2015/10/28 08:47:11 StateInit: exiting 0
-2015/10/28 08:47:11 Entering StateReady
-2015/10/28 08:47:11 os.Stat(../echosrv/activate.sh)
-2015/10/28 08:47:11 Orchestrator: Calling StateReady
-2015/10/28 08:47:11 Orchestrator: waiting for StateReady to reply
-2015/10/28 08:47:11 ../echosrv/activate.sh ready returns ok
-2015/10/28 08:47:11 os.Stat(../echosrv_test/activate.sh)
-2015/10/28 08:47:11 ../echosrv_test/activate.sh ready returns ok
-2015/10/28 08:47:11 3 of 3 apps are in STATETesting
-2015/10/28 08:47:11 Orchestrator: StateReady completed:  0
-2015/10/28 08:47:11 Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm
-2015/10/28 08:47:11 waiting for Uhura to contact tgo
-2015/10/28 08:47:11 StateReady: exiting 0
-2015/10/28 08:47:11 Comms Handler
-2015/10/28 08:47:11 Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp:28 Oct 15 08:47 PDT}
-2015/10/28 08:47:11 Orchestrator: Comms reports uhura has sent command:  0
-2015/10/28 08:47:11 Proceding to state TEST
-2015/10/28 08:47:11 Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm
-2015/10/28 08:47:11 Posted TEST status to uhura. ReplyCode: 0
-2015/10/28 08:47:11 Entering StateTest
-2015/10/28 08:47:11 os.Stat(../echosrv_test/activate.sh)
-2015/10/28 08:47:12 ../echosrv_test/activate.sh returns OK
-2015/10/28 08:47:12 os.Stat(../echosrv_test/activate.sh)
-2015/10/28 08:47:12 ../echosrv_test/activate.sh returns DONE
-2015/10/28 08:47:12 os.Stat(../echosrv_test/activate.sh)
-2015/10/28 08:47:12 EXTENDED STATUS DATA:  testresults: PASS
-2015/10/28 08:47:12 2 of 2 apps are in STATEDone
-2015/10/28 08:47:12 Orchestrator: StateTest completed:  0
-2015/10/28 08:47:12 StateTest: exiting 0
-2015/10/28 08:47:12 Posted DONE status to uhura. ReplyCode: 0
-2015/10/28 08:47:12 StateOrchestrator exiting
+2016/01/04 09:43:40 loadEnvDescrFromBytes: success
+2016/01/04 09:43:40 readEnvDescr - Loading uhura_map.json
+2016/01/04 09:43:40 uhura url: http://localhost:8150/
+2016/01/04 09:43:40 There are 3 apps on this instance:
+2016/01/04 09:43:40 	0. tgo
+2016/01/04 09:43:40 	1. echosrv
+2016/01/04 09:43:40 	2. echosrv_test
+2016/01/04 09:43:40 Entering processAppResourceNeeds
+2016/01/04 09:43:40 MapRequest
+2016/01/04 09:43:40 loadEnvDescrFromBytes - content = {"EnvName":"Multiple-Instances Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGO-0","OS":"Linux","HostName":"localhost","InstAwsID":"","Resources":{"MySQL":false},"Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8103,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv","Name":"echosrv","Repo":"jenkins-snapshot/echosrv/latest","UPort":8200,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv_test","Name":"echosrv_test","Repo":"jenkins-snapshot/echosrv_test/latest","UPort":8204,"IsTest":true,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null}]}]}
+2016/01/04 09:43:40 loadEnvDescrFromBytes: success
+2016/01/04 09:43:40 I am instance 0, my name is TGO-0, I am app index 0
+2016/01/04 09:43:40 I will listen for commands on port 8103
+2016/01/04 09:43:40 UhuraComms http service listening on port: 8103
+2016/01/04 09:43:40 Orchestrator: StateUnknown started
+2016/01/04 09:43:40 Entering StateUnknown
+2016/01/04 09:43:40 Starting all apps
+2016/01/04 09:43:40 os.Stat(../echosrv/activate.sh)
+2016/01/04 09:43:40 ../echosrv/activate.sh start returns ok
+2016/01/04 09:43:40 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 09:43:40 ../echosrv_test/activate.sh start returns ok
+2016/01/04 09:43:40 Orchestrator: StateUnknown completed:  1
+2016/01/04 09:43:40 Orchestrator: StateInit started
+2016/01/04 09:43:40 3 of 3 apps are in STATEInitializing
+2016/01/04 09:43:40 Orchestrator: StateInit completed:  0
+2016/01/04 09:43:40 Orchestrator: Entering StateReady
+2016/01/04 09:43:40 Orchestrator: Posted READY status to uhura. ReplyCode: 0
+2016/01/04 09:43:40 StateUnknown: exiting 0
+2016/01/04 09:43:40 StateInit: exiting 0
+2016/01/04 09:43:40 Entering StateReady
+2016/01/04 09:43:40 os.Stat(../echosrv/activate.sh)
+2016/01/04 09:43:40 Orchestrator: Calling StateReady
+2016/01/04 09:43:40 Orchestrator: waiting for StateReady to reply
+2016/01/04 09:43:40 ../echosrv/activate.sh ready returns ok
+2016/01/04 09:43:40 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 09:43:40 ../echosrv_test/activate.sh ready returns ok
+2016/01/04 09:43:40 3 of 3 apps are in STATETesting
+2016/01/04 09:43:40 Orchestrator: StateReady completed:  0
+2016/01/04 09:43:40 Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm
+2016/01/04 09:43:40 waiting for Uhura to contact tgo
+2016/01/04 09:43:40 StateReady: exiting 0
+2016/01/04 09:43:40 Comms Handler
+2016/01/04 09:43:40 Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp:04 Jan 16 09:43 PST}
+2016/01/04 09:43:40 Orchestrator: Comms reports uhura has sent command:  0
+2016/01/04 09:43:40 Proceding to state TEST
+2016/01/04 09:43:40 Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm
+2016/01/04 09:43:40 Posted TEST status to uhura. ReplyCode: 0
+2016/01/04 09:43:40 Entering StateTest
+2016/01/04 09:43:40 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 09:43:41 ../echosrv_test/activate.sh returns OK
+2016/01/04 09:43:41 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 09:43:41 ../echosrv_test/activate.sh returns DONE
+2016/01/04 09:43:41 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 09:43:41 EXTENDED STATUS DATA:  testresults: PASS
+2016/01/04 09:43:41 2 of 2 apps are in STATEDone
+2016/01/04 09:43:41 Orchestrator: StateTest completed:  0
+2016/01/04 09:43:41 StateTest: exiting 0
+2016/01/04 09:43:41 Posted DONE status to uhura. ReplyCode: 0
+2016/01/04 09:43:41 StateOrchestrator exiting

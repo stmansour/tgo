@@ -11,8 +11,8 @@ clean:
 	@echo "*** CLEAN COMPLETE in test/ ***"
 
 test:
-	cd simfunc;make test
-	cd func1;make test
-	cd sys0;make test
+	echo "\n**** SIMFUNC ****\n";cd simfunc;make test
+	echo "\n**** FUNC1 ****\n";cd func1;make test
+	echo "\n**** SYS0  ****\n";cd sys0;make test
 	@echo "*** TEST COMPLETE - ALL TESTS PASSED in test/ ***"
 
