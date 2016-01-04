@@ -217,6 +217,7 @@ func activateCmd(i int, cmd string) string {
 		}
 		out, err = exec.Command("./activate.sh", cmd).Output()
 		if err != nil {
+			ulog("exec.Command(\".activate.sh\") returned error: %v\n", err)
 			log.Fatal(err)
 		}
 		rsp = string(out)
