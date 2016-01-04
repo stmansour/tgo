@@ -1,46 +1,46 @@
-2016/01/04 10:56:13 **********   T G O   **********
-2016/01/04 10:56:13 loadEnvDescrFromBytes - content = {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8150,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8152,"IsTest":false,"State":0,"RunCmd":""}]}]}
+2016/01/04 12:15:00 **********   T G O   **********
+2016/01/04 12:15:00 loadEnvDescrFromBytes - content = {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8150,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"","Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8152,"IsTest":false,"State":0,"RunCmd":""}]}]}
 
-2016/01/04 10:56:13 loadEnvDescrFromBytes: success
-2016/01/04 10:56:13 readEnvDescr - Loading uhura_map.json
-2016/01/04 10:56:13 uhura url: http://localhost:8150/
-2016/01/04 10:56:13 There are 1 apps on this instance:
-2016/01/04 10:56:13 	0. tgo
-2016/01/04 10:56:13 Entering processAppResourceNeeds
-2016/01/04 10:56:13 MapRequest
-2016/01/04 10:56:13 loadEnvDescrFromBytes - content = {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8150,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"localhost","InstAwsID":"","Resources":{"MySQL":false},"Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8152,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null}]}]}
-2016/01/04 10:56:13 loadEnvDescrFromBytes: success
-2016/01/04 10:56:13 I am instance 0, my name is TGOtest, I am app index 0
-2016/01/04 10:56:13 I will listen for commands on port 8152
-2016/01/04 10:56:13 UhuraComms http service listening on port: 8152
-2016/01/04 10:56:13 Orchestrator: StateUnknown started
-2016/01/04 10:56:13 Entering StateUnknown
-2016/01/04 10:56:13 Starting all apps
-2016/01/04 10:56:13 Orchestrator: StateUnknown completed:  1
-2016/01/04 10:56:13 Orchestrator: StateInit started
-2016/01/04 10:56:13 1 of 1 apps are in STATEInitializing
-2016/01/04 10:56:13 Orchestrator: StateInit completed:  0
-2016/01/04 10:56:13 Orchestrator: Entering StateReady
-2016/01/04 10:56:13 Orchestrator: Posted READY status to uhura. ReplyCode: 0
-2016/01/04 10:56:13 StateUnknown: exiting 0
-2016/01/04 10:56:13 StateInit: exiting 0
-2016/01/04 10:56:13 Entering StateReady
-2016/01/04 10:56:13 1 of 1 apps are in STATETesting
-2016/01/04 10:56:13 Orchestrator: Calling StateReady
-2016/01/04 10:56:13 Orchestrator: waiting for StateReady to reply
-2016/01/04 10:56:13 Orchestrator: StateReady completed:  0
-2016/01/04 10:56:13 StateReady: exiting 0
-2016/01/04 10:56:13 Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm
-2016/01/04 10:56:13 waiting for Uhura to contact tgo
-2016/01/04 10:56:13 Comms Handler
-2016/01/04 10:56:13 Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp:04 Jan 16 10:56 PST}
-2016/01/04 10:56:13 Orchestrator: Comms reports uhura has sent command:  0
-2016/01/04 10:56:13 Proceeding to state TEST
-2016/01/04 10:56:13 Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm
-2016/01/04 10:56:13 Posted TEST status to uhura. ReplyCode: 0
-2016/01/04 10:56:13 Entering StateTest
-2016/01/04 10:56:13 1 of 1 apps are in STATEDone
-2016/01/04 10:56:13 Orchestrator: StateTest completed:  0
-2016/01/04 10:56:13 StateTest: exiting 0
-2016/01/04 10:56:13 Posted DONE status to uhura. ReplyCode: 0
-2016/01/04 10:56:13 StateOrchestrator exiting
+2016/01/04 12:15:00 loadEnvDescrFromBytes: success
+2016/01/04 12:15:00 readEnvDescr - Loading uhura_map.json
+2016/01/04 12:15:00 uhura url: http://localhost:8150/
+2016/01/04 12:15:00 There are 1 apps on this instance:
+2016/01/04 12:15:00 	0. tgo
+2016/01/04 12:15:00 Entering processAppResourceNeeds
+2016/01/04 12:15:00 MapRequest
+2016/01/04 12:15:00 loadEnvDescrFromBytes - content = {"EnvName":"My Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8150,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGOtest","OS":"Linux","HostName":"localhost","InstAwsID":"","Resources":{"MySQL":false},"Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8152,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null}]}]}
+2016/01/04 12:15:00 loadEnvDescrFromBytes: success
+2016/01/04 12:15:00 I am instance 0, my name is TGOtest, I am app index 0
+2016/01/04 12:15:00 I will listen for commands on port 8152
+2016/01/04 12:15:00 UhuraComms http service listening on port: 8152
+2016/01/04 12:15:00 Orchestrator: StateUnknown started
+2016/01/04 12:15:00 Entering StateUnknown
+2016/01/04 12:15:00 Starting all apps
+2016/01/04 12:15:00 Orchestrator: StateUnknown completed:  1
+2016/01/04 12:15:00 Orchestrator: StateInit started
+2016/01/04 12:15:00 1 of 1 apps are in STATEInitializing
+2016/01/04 12:15:00 Orchestrator: StateInit completed:  0
+2016/01/04 12:15:00 StateUnknown: exiting 0
+2016/01/04 12:15:00 Orchestrator: Entering StateReady
+2016/01/04 12:15:00 StateInit: exiting 0
+2016/01/04 12:15:00 Orchestrator: Posted READY status to uhura. ReplyCode: 0
+2016/01/04 12:15:00 Entering StateReady
+2016/01/04 12:15:00 1 of 1 apps are in STATETesting
+2016/01/04 12:15:00 Orchestrator: Calling StateReady
+2016/01/04 12:15:00 Orchestrator: waiting for StateReady to reply
+2016/01/04 12:15:00 Orchestrator: StateReady completed:  0
+2016/01/04 12:15:00 StateReady: exiting 0
+2016/01/04 12:15:00 Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm
+2016/01/04 12:15:00 waiting for Uhura to contact tgo
+2016/01/04 12:15:00 Comms Handler
+2016/01/04 12:15:00 Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp:04 Jan 16 12:15 PST}
+2016/01/04 12:15:00 Orchestrator: Comms reports uhura has sent command:  0
+2016/01/04 12:15:00 Proceeding to state TEST
+2016/01/04 12:15:00 Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm
+2016/01/04 12:15:00 Posted TEST status to uhura. ReplyCode: 0
+2016/01/04 12:15:00 Entering StateTest
+2016/01/04 12:15:00 1 of 1 apps are in STATEDone
+2016/01/04 12:15:00 Orchestrator: StateTest completed:  0
+2016/01/04 12:15:00 StateTest: exiting 0
+2016/01/04 12:15:00 Posted DONE status to uhura. ReplyCode: 0
+2016/01/04 12:15:00 StateOrchestrator exiting
