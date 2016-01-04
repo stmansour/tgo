@@ -215,12 +215,15 @@ func activateCmd(i int, cmd string) string {
 			ulog("no activation script in: %s\n", dirname)
 			return "error - no activation script"
 		}
+		ulog("DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )\n", dirname)
 		out, err = exec.Command("./activate.sh", cmd).Output()
+		ulog("DEBUG: exec.Command returned.  err=%v\n", err)
 		if err != nil {
 			ulog("exec.Command(\".activate.sh\") returned error: %v\n", err)
 			log.Fatal(err)
 		}
 		rsp = string(out)
+		ulog("DEBUG: out=%s\n", rsp)
 	}
 	os.Chdir("../tgo")
 	return rsp
@@ -238,8 +241,10 @@ func actionAllApps(actCmd string, expect string, stateval int, status string) {
 		}
 		filename := fmt.Sprintf("../%s/activate.sh", a.Name) // this is the activation script we'll be hitting
 		retval := activateCmd(i, actCmd)                     // run the command
-		lower := strings.ToLower(retval)                     // see how it went
-		lower = strings.TrimRight(lower, "\n\r")             // remove CR, LF
+		ulog("DEBUG:  retval := activateCmd(i, actCmd) returned %s\n", retval)
+		lower := strings.ToLower(retval)         // see how it went
+		lower = strings.TrimRight(lower, "\n\r") // remove CR, LF
+		ulog("DEBUG:  lower = strings.TrimRight(lower, '\n\r') returned %s\n", lower)
 		switch {
 		case lower == expect: // if it started ok...
 			ulog("%s %s returns %s\n", filename, actCmd, expect) // update the log...
@@ -501,7 +506,7 @@ func StateOrchestrator(alldone chan int) {
 	case i := <-Tgo.UhuraComm:
 		ulog("Orchestrator: Comms reports uhura has sent command:  %d\n", i)
 		if i == cmdTESTNOW {
-			ulog("Proceding to state TEST\n")
+			ulog("Proceeding to state TEST\n")
 		} else {
 			ulog("Unexpected response: %d.  Not sure what to do, so proceeding...\n", i)
 		}
