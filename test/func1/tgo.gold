@@ -1,5 +1,5 @@
-2016/01/04 10:55:19 **********   T G O   **********
-2016/01/04 10:55:19 loadEnvDescrFromBytes - content = {
+2016/01/04 11:14:25 **********   T G O   **********
+2016/01/04 11:14:25 loadEnvDescrFromBytes - content = {
     "EnvName": "Multiple-Instances Test Environment",
     "Instances": [
         {
@@ -44,113 +44,106 @@
     "UhuraURL": "http://localhost:8150/"
 }
 
-2016/01/04 10:55:19 loadEnvDescrFromBytes: success
-2016/01/04 10:55:19 readEnvDescr - Loading uhura_map.json
-2016/01/04 10:55:19 uhura url: http://localhost:8150/
-2016/01/04 10:55:19 There are 3 apps on this instance:
-2016/01/04 10:55:19 	0. tgo
-2016/01/04 10:55:19 	1. echosrv
-2016/01/04 10:55:19 	2. echosrv_test
-2016/01/04 10:55:19 Entering processAppResourceNeeds
-2016/01/04 10:55:19 MapRequest
-2016/01/04 10:55:19 loadEnvDescrFromBytes - content = {"EnvName":"Multiple-Instances Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGO-0","OS":"Linux","HostName":"localhost","InstAwsID":"","Resources":{"MySQL":false},"Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8103,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv","Name":"echosrv","Repo":"jenkins-snapshot/echosrv/latest","UPort":8200,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv_test","Name":"echosrv_test","Repo":"jenkins-snapshot/echosrv_test/latest","UPort":8204,"IsTest":true,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null}]}]}
-2016/01/04 10:55:19 loadEnvDescrFromBytes: success
-2016/01/04 10:55:19 I am instance 0, my name is TGO-0, I am app index 0
-2016/01/04 10:55:19 I will listen for commands on port 8103
-2016/01/04 10:55:19 UhuraComms http service listening on port: 8103
-2016/01/04 10:55:19 Orchestrator: StateUnknown started
-2016/01/04 10:55:19 Entering StateUnknown
-2016/01/04 10:55:19 Starting all apps
-2016/01/04 10:55:19 os.Stat(../echosrv/activate.sh)
-2016/01/04 10:55:19 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
-%!(EXTRA string=../echosrv)
-2016/01/04 10:55:19 DEBUG: exec.Command returned.  err=<nil>
-2016/01/04 10:55:19 DEBUG: out=OK
+2016/01/04 11:14:25 loadEnvDescrFromBytes: success
+2016/01/04 11:14:25 readEnvDescr - Loading uhura_map.json
+2016/01/04 11:14:25 uhura url: http://localhost:8150/
+2016/01/04 11:14:25 There are 3 apps on this instance:
+2016/01/04 11:14:25 	0. tgo
+2016/01/04 11:14:25 	1. echosrv
+2016/01/04 11:14:25 	2. echosrv_test
+2016/01/04 11:14:25 Entering processAppResourceNeeds
+2016/01/04 11:14:25 MapRequest
+2016/01/04 11:14:25 loadEnvDescrFromBytes - content = {"EnvName":"Multiple-Instances Test Environment","UhuraURL":"http://localhost:8150/","UhuraPort":8100,"ThisInst":0,"State":0,"Instances":[{"InstName":"TGO-0","OS":"Linux","HostName":"localhost","InstAwsID":"","Resources":{"MySQL":false},"Apps":[{"UID":"tgo0","Name":"tgo","Repo":"jenkins-snapshot/tgo/latest","UPort":8103,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv","Name":"echosrv","Repo":"jenkins-snapshot/echosrv/latest","UPort":8200,"IsTest":false,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null},{"UID":"echosrv_test","Name":"echosrv_test","Repo":"jenkins-snapshot/echosrv_test/latest","UPort":8204,"IsTest":true,"State":0,"RunCmd":"","AppRes":{"Cmd":"","RestoreMySQLdb":"","DBname":""},"KVs":null}]}]}
+2016/01/04 11:14:25 loadEnvDescrFromBytes: success
+2016/01/04 11:14:25 I am instance 0, my name is TGO-0, I am app index 0
+2016/01/04 11:14:25 I will listen for commands on port 8103
+2016/01/04 11:14:25 UhuraComms http service listening on port: 8103
+2016/01/04 11:14:25 Orchestrator: StateUnknown started
+2016/01/04 11:14:25 Entering StateUnknown
+2016/01/04 11:14:25 Starting all apps
+2016/01/04 11:14:25 os.Stat(../echosrv/activate.sh)
+2016/01/04 11:14:25 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
+2016/01/04 11:14:25 DEBUG: exec.Command returned.  err=<nil>
+2016/01/04 11:14:25 DEBUG: out=OK
 
-2016/01/04 10:55:19 DEBUG:  retval := activateCmd(i, actCmd) returned OK
+2016/01/04 11:14:25 DEBUG:  retval := activateCmd(i, actCmd) returned OK
 
-2016/01/04 10:55:19 DEBUG:  lower = strings.TrimRight(lower, '
+2016/01/04 11:14:25 DEBUG:  lower = strings.TrimRight(lower, '
 ') returned ok
-2016/01/04 10:55:19 ../echosrv/activate.sh start returns ok
-2016/01/04 10:55:19 os.Stat(../echosrv_test/activate.sh)
-2016/01/04 10:55:19 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
-%!(EXTRA string=../echosrv_test)
-2016/01/04 10:55:19 DEBUG: exec.Command returned.  err=<nil>
-2016/01/04 10:55:19 DEBUG: out=OK
+2016/01/04 11:14:25 ../echosrv/activate.sh start returns ok
+2016/01/04 11:14:25 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 11:14:25 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
+2016/01/04 11:14:25 DEBUG: exec.Command returned.  err=<nil>
+2016/01/04 11:14:25 DEBUG: out=OK
 
-2016/01/04 10:55:19 DEBUG:  retval := activateCmd(i, actCmd) returned OK
+2016/01/04 11:14:25 DEBUG:  retval := activateCmd(i, actCmd) returned OK
 
-2016/01/04 10:55:19 DEBUG:  lower = strings.TrimRight(lower, '
+2016/01/04 11:14:25 DEBUG:  lower = strings.TrimRight(lower, '
 ') returned ok
-2016/01/04 10:55:19 ../echosrv_test/activate.sh start returns ok
-2016/01/04 10:55:19 Orchestrator: StateUnknown completed:  1
-2016/01/04 10:55:19 Orchestrator: StateInit started
-2016/01/04 10:55:19 3 of 3 apps are in STATEInitializing
-2016/01/04 10:55:19 Orchestrator: StateInit completed:  0
-2016/01/04 10:55:19 Orchestrator: Entering StateReady
-2016/01/04 10:55:19 Orchestrator: Posted READY status to uhura. ReplyCode: 0
-2016/01/04 10:55:19 StateUnknown: exiting 0
-2016/01/04 10:55:19 StateInit: exiting 0
-2016/01/04 10:55:19 Entering StateReady
-2016/01/04 10:55:19 os.Stat(../echosrv/activate.sh)
-2016/01/04 10:55:19 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
-%!(EXTRA string=../echosrv)
-2016/01/04 10:55:19 Orchestrator: Calling StateReady
-2016/01/04 10:55:19 Orchestrator: waiting for StateReady to reply
-2016/01/04 10:55:19 DEBUG: exec.Command returned.  err=<nil>
-2016/01/04 10:55:19 DEBUG: out=OK
+2016/01/04 11:14:25 ../echosrv_test/activate.sh start returns ok
+2016/01/04 11:14:25 Orchestrator: StateUnknown completed:  1
+2016/01/04 11:14:25 Orchestrator: StateInit started
+2016/01/04 11:14:25 StateUnknown: exiting 0
+2016/01/04 11:14:25 3 of 3 apps are in STATEInitializing
+2016/01/04 11:14:25 Orchestrator: StateInit completed:  0
+2016/01/04 11:14:25 Orchestrator: Entering StateReady
+2016/01/04 11:14:25 Orchestrator: Posted READY status to uhura. ReplyCode: 0
+2016/01/04 11:14:25 StateInit: exiting 0
+2016/01/04 11:14:25 Entering StateReady
+2016/01/04 11:14:25 os.Stat(../echosrv/activate.sh)
+2016/01/04 11:14:25 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
+2016/01/04 11:14:25 Orchestrator: Calling StateReady
+2016/01/04 11:14:25 Orchestrator: waiting for StateReady to reply
+2016/01/04 11:14:26 DEBUG: exec.Command returned.  err=<nil>
+2016/01/04 11:14:26 DEBUG: out=OK
 
-2016/01/04 10:55:19 DEBUG:  retval := activateCmd(i, actCmd) returned OK
+2016/01/04 11:14:26 DEBUG:  retval := activateCmd(i, actCmd) returned OK
 
-2016/01/04 10:55:19 DEBUG:  lower = strings.TrimRight(lower, '
+2016/01/04 11:14:26 DEBUG:  lower = strings.TrimRight(lower, '
 ') returned ok
-2016/01/04 10:55:19 ../echosrv/activate.sh ready returns ok
-2016/01/04 10:55:19 os.Stat(../echosrv_test/activate.sh)
-2016/01/04 10:55:19 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
-%!(EXTRA string=../echosrv_test)
-2016/01/04 10:55:19 DEBUG: exec.Command returned.  err=<nil>
-2016/01/04 10:55:19 DEBUG: out=OK
+2016/01/04 11:14:26 ../echosrv/activate.sh ready returns ok
+2016/01/04 11:14:26 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 11:14:26 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
+2016/01/04 11:14:26 DEBUG: exec.Command returned.  err=<nil>
+2016/01/04 11:14:26 DEBUG: out=OK
 
-2016/01/04 10:55:19 DEBUG:  retval := activateCmd(i, actCmd) returned OK
+2016/01/04 11:14:26 DEBUG:  retval := activateCmd(i, actCmd) returned OK
 
-2016/01/04 10:55:19 DEBUG:  lower = strings.TrimRight(lower, '
+2016/01/04 11:14:26 DEBUG:  lower = strings.TrimRight(lower, '
 ') returned ok
-2016/01/04 10:55:19 ../echosrv_test/activate.sh ready returns ok
-2016/01/04 10:55:19 3 of 3 apps are in STATETesting
-2016/01/04 10:55:19 Orchestrator: StateReady completed:  0
-2016/01/04 10:55:19 Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm
-2016/01/04 10:55:19 waiting for Uhura to contact tgo
-2016/01/04 10:55:19 StateReady: exiting 0
-2016/01/04 10:55:19 Comms Handler
-2016/01/04 10:55:19 Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp:04 Jan 16 10:55 PST}
-2016/01/04 10:55:19 Orchestrator: Comms reports uhura has sent command:  0
-2016/01/04 10:55:19 Proceeding to state TEST
-2016/01/04 10:55:19 Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm
-2016/01/04 10:55:19 Posted TEST status to uhura. ReplyCode: 0
-2016/01/04 10:55:19 Entering StateTest
-2016/01/04 10:55:19 os.Stat(../echosrv_test/activate.sh)
-2016/01/04 10:55:19 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
-%!(EXTRA string=../echosrv_test)
-2016/01/04 10:55:20 DEBUG: exec.Command returned.  err=<nil>
-2016/01/04 10:55:20 DEBUG: out=OK
+2016/01/04 11:14:26 ../echosrv_test/activate.sh ready returns ok
+2016/01/04 11:14:26 3 of 3 apps are in STATETesting
+2016/01/04 11:14:26 Orchestrator: StateReady completed:  0
+2016/01/04 11:14:26 Orchestrator: READY TO TRANSITION TO TEST, read channel Tgo.UhuraComm
+2016/01/04 11:14:26 waiting for Uhura to contact tgo
+2016/01/04 11:14:26 StateReady: exiting 0
+2016/01/04 11:14:26 Comms Handler
+2016/01/04 11:14:26 Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp:04 Jan 16 11:14 PST}
+2016/01/04 11:14:26 Orchestrator: Comms reports uhura has sent command:  0
+2016/01/04 11:14:26 Proceeding to state TEST
+2016/01/04 11:14:26 Orchestrator: TRANSITION TO TEST, writing to channel Tgo.UhuraComm
+2016/01/04 11:14:26 Posted TEST status to uhura. ReplyCode: 0
+2016/01/04 11:14:26 Entering StateTest
+2016/01/04 11:14:26 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 11:14:26 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
+2016/01/04 11:14:27 DEBUG: exec.Command returned.  err=<nil>
+2016/01/04 11:14:27 DEBUG: out=OK
 
-2016/01/04 10:55:20 ../echosrv_test/activate.sh returns OK
-2016/01/04 10:55:20 os.Stat(../echosrv_test/activate.sh)
-2016/01/04 10:55:20 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
-%!(EXTRA string=../echosrv_test)
-2016/01/04 10:55:20 DEBUG: exec.Command returned.  err=<nil>
-2016/01/04 10:55:20 DEBUG: out=DONE
+2016/01/04 11:14:27 ../echosrv_test/activate.sh returns OK
+2016/01/04 11:14:27 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 11:14:27 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
+2016/01/04 11:14:27 DEBUG: exec.Command returned.  err=<nil>
+2016/01/04 11:14:27 DEBUG: out=DONE
 
-2016/01/04 10:55:20 ../echosrv_test/activate.sh returns DONE
-2016/01/04 10:55:20 os.Stat(../echosrv_test/activate.sh)
-2016/01/04 10:55:20 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
-%!(EXTRA string=../echosrv_test)
-2016/01/04 10:55:20 DEBUG: exec.Command returned.  err=<nil>
-2016/01/04 10:55:20 DEBUG: out=PASS
+2016/01/04 11:14:27 ../echosrv_test/activate.sh returns DONE
+2016/01/04 11:14:27 os.Stat(../echosrv_test/activate.sh)
+2016/01/04 11:14:27 DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )
+2016/01/04 11:14:27 DEBUG: exec.Command returned.  err=<nil>
+2016/01/04 11:14:27 DEBUG: out=PASS
 
-2016/01/04 10:55:20 EXTENDED STATUS DATA:  testresults: PASS
-2016/01/04 10:55:20 2 of 2 apps are in STATEDone
-2016/01/04 10:55:20 Orchestrator: StateTest completed:  0
-2016/01/04 10:55:20 StateTest: exiting 0
-2016/01/04 10:55:20 Posted DONE status to uhura. ReplyCode: 0
-2016/01/04 10:55:20 StateOrchestrator exiting
+2016/01/04 11:14:27 EXTENDED STATUS DATA:  testresults: PASS
+2016/01/04 11:14:27 2 of 2 apps are in STATEDone
+2016/01/04 11:14:27 Orchestrator: StateTest completed:  0
+2016/01/04 11:14:27 StateTest: exiting 0
+2016/01/04 11:14:27 Posted DONE status to uhura. ReplyCode: 0
+2016/01/04 11:14:27 StateOrchestrator exiting

@@ -46,7 +46,7 @@ type appDescr struct {
 	RunCmd string
 }
 
-// ResourceDescr is a structure of data defining what optional resources
+// InstanceResourceDescr is a structure of data defining what optional resources
 // each instance needs.
 type InstanceResourceDescr struct {
 	MySQL bool // if true, mysql will be started
@@ -215,7 +215,7 @@ func activateCmd(i int, cmd string) string {
 			ulog("no activation script in: %s\n", dirname)
 			return "error - no activation script"
 		}
-		ulog("DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )\n", dirname)
+		ulog("DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )\n")
 		out, err = exec.Command("./activate.sh", cmd).Output()
 		ulog("DEBUG: exec.Command returned.  err=%v\n", err)
 		if err != nil {
@@ -261,7 +261,7 @@ func actionAllApps(actCmd string, expect string, stateval int, status string) {
 	}
 }
 
-// StateInit puts TGO into the INIT state.
+// StateUnknown puts TGO into the INIT state.
 // 'activate.sh start' all apps
 // set all their states to STATEInitializing
 func StateUnknown() chan int {
@@ -301,7 +301,7 @@ func StateInit() chan int {
 	return c
 }
 
-// 'activate.sh ready' all apps.  They will probably already be in the READY state,
+// StateReady performs 'activate.sh ready' all apps.  They will probably already be in the READY state,
 // but this is the final check. If there were slow starters during the INIT phase
 // they may need the time.
 func StateReady() chan int {
