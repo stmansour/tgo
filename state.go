@@ -36,14 +36,15 @@ type AppResourceDescr struct {
 }
 
 type appDescr struct {
-	UID    string
-	Name   string
-	Repo   string
-	UPort  int
-	IsTest bool
-	State  int
-	AppRes AppResourceDescr
-	RunCmd string
+	UID          string
+	Name         string
+	Repo         string
+	UPort        int
+	IsTest       bool
+	State        int
+	AppRes       AppResourceDescr
+	RunCmd       string // this overrides activate.sh if present
+	ActivateOpts string // supply these runtime options to Activate when issuing START
 }
 
 // InstanceResourceDescr is a structure of data defining what optional resources
