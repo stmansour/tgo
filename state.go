@@ -217,10 +217,13 @@ func activateCmd(i int, cmd string) string {
 			return "error - no activation script"
 		}
 		// ulog("DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )\n")
-		out, err = exec.Command("./activate.sh", cmd).Output()
+		args := a.ActivateOpts + " " + cmd
+		ca := strings.Split(args, " ")
+		ulog("DEBUG:  ./activate.sh %v\n", ca...)
+		out, err = exec.Command("./activate.sh", ca...).Output()
 		// ulog("DEBUG: exec.Command returned.  err=%v\n", err)
 		if err != nil {
-			ulog("exec.Command(\".activate.sh\") returned error: %v\n", err)
+			ulog("exec.Command(\".activate.sh %v\") returned error: %v\n", ca, err)
 			log.Fatal(err)
 		}
 		rsp = string(out)
