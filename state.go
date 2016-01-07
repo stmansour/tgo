@@ -186,7 +186,7 @@ func activateCmd(i int, cmd string) string {
 	if a.RunCmd != "" && // special handling if there's a RunCmd and...
 		((cmd == "start" && !a.IsTest) || // either we're starting an app
 			(cmd == "test" && a.IsTest)) { // or we're starting a test
-		cmd := envDescrSub(a.RunCmd)
+		cmd := strings.TrimSpace(envDescrSub(a.RunCmd))
 		ca := strings.Split(cmd, " ")
 		ulog("os.Stat(%s/%s)\n", dirname, ca[0])
 		if _, err = os.Stat(ca[0]); os.IsNotExist(err) {
@@ -217,13 +217,19 @@ func activateCmd(i int, cmd string) string {
 			return "error - no activation script"
 		}
 		// ulog("DEBUG: execute( out, err = exec.Command('./activate.sh', cmd).Output() )\n")
-		args := a.ActivateOpts + " " + cmd
-		ca := strings.Split(args, " ")
-		ulog("DEBUG:  ./activate.sh %v\n", ca...)
-		out, err = exec.Command("./activate.sh", ca...).Output()
+		if len(a.ActivateOpts) > 0 && cmd == "start" {
+			tmpstr := a.ActivateOpts + " " + cmd
+			tmpstr = strings.TrimSpace(tmpstr)
+			args := strings.Split(tmpstr, " ")
+			ulog("exec.Command(\".activate.sh %v\")\n", args)
+			out, err = exec.Command("./activate.sh", args...).Output()
+		} else {
+			ulog("exec.Command(\".activate.sh %s\")\n", cmd)
+			out, err = exec.Command("./activate.sh", cmd).Output()
+		}
 		// ulog("DEBUG: exec.Command returned.  err=%v\n", err)
 		if err != nil {
-			ulog("exec.Command(\".activate.sh %v\") returned error: %v\n", ca, err)
+			ulog("exec.Command() returned error: %v\n", err)
 			log.Fatal(err)
 		}
 		rsp = string(out)
