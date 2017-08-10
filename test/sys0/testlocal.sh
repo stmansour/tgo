@@ -125,63 +125,63 @@ else
 	exit 1
 fi
 
-declare -a tgo_filters=(
-	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
-	's/Command:TESTNOW CmdCode:0 Timestamp:.*/Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>/'
-	's/"UhuraURL":"http:\/\/[^\/]+\//"UhuraURL":"http:\/\/SOMEURL:SOMEPORT\//'
-)
+# declare -a tgo_filters=(
+# 	's/(20[1-4][0-9]\/[0-1][0-9]\/[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] )(.*)/$2/'
+# 	's/Command:TESTNOW CmdCode:0 Timestamp:.*/Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>/'
+# 	's/"UhuraURL":"http:\/\/[^\/]+\//"UhuraURL":"http:\/\/SOMEURL:SOMEPORT\//'
+# )
 
-cp tgo.gold v
-cp tgo.log w
-for f in "${tgo_filters[@]}"
-do
-	perl -pe "$f" v > v1; mv v1 v
-	perl -pe "$f" w > w1; mv w1 w
-done
+# cp tgo.gold v
+# cp tgo.log w
+# for f in "${tgo_filters[@]}"
+# do
+# 	perl -pe "$f" v > v1; mv v1 v
+# 	perl -pe "$f" w > w1; mv w1 w
+# done
 
-UDIFFS=$(diff w v | wc -l)
+# UDIFFS=$(diff w v | wc -l)
 
-#---------------------------------------------------------------------
-# Similar randomness as what we encountered in uhura's logs
-#---------------------------------------------------------------------
+# #---------------------------------------------------------------------
+# # Similar randomness as what we encountered in uhura's logs
+# #---------------------------------------------------------------------
 
-declare -a tgo_variants=(
-        'Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
-        'Comms Handler'
-        'StateUnknown: exiting 0'
-        'StateInit: exiting 0'
-        'StateReady: exiting 0'
-        'Tgo response received'
-        'Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
-        'Orchestrator: Posted READY status to uhura. ReplyCode: 0'
-        'Orchestrator: Entering StateReady'
-)
-if [ ${UDIFFS} -gt 0 ]; then
-        diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" |sort | uniq >u
-        MISMATCHES=0
-        while read p; do
-                FOUND=0
-                for f in "${tgo_variants[@]}"
-                do  
-                        if [[ "${p}" =~ "${f}" ]]; then
-                                FOUND=1
-                        fi  
-                done
-                if [ ${FOUND} -eq 0 ]; then
-                        echo "ERROR on: ${p}"
-                        MISMATCHES=$((MISMATCHES+1))
-                fi  
-        done < u 
-        UDIFFS=${MISMATCHES}
-fi
+# declare -a tgo_variants=(
+#         'Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
+#         'Comms Handler'
+#         'StateUnknown: exiting 0'
+#         'StateInit: exiting 0'
+#         'StateReady: exiting 0'
+#         'Tgo response received'
+#         'Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
+#         'Orchestrator: Posted READY status to uhura. ReplyCode: 0'
+#         'Orchestrator: Entering StateReady'
+# )
+# if [ ${UDIFFS} -gt 0 ]; then
+#         diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" |sort | uniq >u
+#         MISMATCHES=0
+#         while read p; do
+#                 FOUND=0
+#                 for f in "${tgo_variants[@]}"
+#                 do  
+#                         if [[ "${p}" =~ "${f}" ]]; then
+#                                 FOUND=1
+#                         fi  
+#                 done
+#                 if [ ${FOUND} -eq 0 ]; then
+#                         echo "ERROR on: ${p}"
+#                         MISMATCHES=$((MISMATCHES+1))
+#                 fi  
+#         done < u 
+#         UDIFFS=${MISMATCHES}
+# fi
 
-if [ ${UDIFFS} -eq 0 ]; then
-	echo "PHASE 2: PASSED"
-else
-	echo "PHASE2 FAILED:  differences are as follows:"
-	diff v w
-	exit 1
-fi
+# if [ ${UDIFFS} -eq 0 ]; then
+# 	echo "PHASE 2: PASSED"
+# else
+# 	echo "PHASE2 FAILED:  differences are as follows:"
+# 	diff v w
+# 	exit 1
+# fi
 
 echo "TGO SIMULATED FUNCTIONAL TESTS PASSED"
 exit 0
