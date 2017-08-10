@@ -154,6 +154,7 @@ declare -a tgo_variants=(
         'Tgo response received'
         'Received comms from Uhura:  {Command:TESTNOW CmdCode:0 Timestamp: <SOME_TIMESTAMP>'
         'Orchestrator: Posted READY status to uhura. ReplyCode: 0'
+        'Orchestrator: Entering StateReady'
 )
 if [ ${UDIFFS} -gt 0 ]; then
         diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" |sort | uniq >u

@@ -149,7 +149,39 @@ do
 	perl -pe "$f" w > w1; mv w1 w
 done
 
-UDIFFS=$(diff w v | wc -l)
+UDIFFS=$(diff v w | wc -l)
+
+declare -a phase2_variants=(
+        'SHUTDOWN will commence in a few seconds'
+)
+
+if [ ${UDIFFS} -gt 0 ]; then
+        diff v w | grep "^[<>]" | perl -pe "s/^[<>]//" |sort | uniq >u
+        MISMATCHES=0
+        while read p; do
+                FOUND=0
+                for f in "${phase2_variants[@]}"
+                do  
+                        if [[ "${p}" =~ "${f}" ]]; then
+                                FOUND=1
+                        fi  
+                done
+                if [ ${FOUND} -eq 0 ]; then
+                        echo "ERROR on: ${p}"
+                        MISMATCHES=$((MISMATCHES+1))
+                fi  
+        done < u 
+        UDIFFS=${MISMATCHES}
+fi
+
+if [ ${UDIFFS} -eq 0 ]; then
+	echo "PHASE 2: PASSED"
+else
+	echo "PHASE 2 FAILED:  differences are as follows:"
+	diff v w
+	exit 1
+fi
+
 
 #---------------------------------------------------------------------
 # Similar randomness as what we encountered in Tgo's logs

@@ -149,10 +149,12 @@ func main() {
 		errcount := IntFuncTest0()
 		ulog("IntFuncTest0 error count: %d\n", errcount)
 	default:
-		MapRequest()                               // get HostName updates before we get started
-		c := make(chan int)                        // a channel to signal us when it's all done
-		InitiateStateMachine(c)                    // initiate and pass in the channel
-		<-c                                        // wait til it's done
-		time.Sleep(time.Duration(1 * time.Second)) // grace period, let everything finish
+		MapRequest()                                  // get HostName updates before we get started
+		c := make(chan int)                           // a channel to signal us when it's all done
+		ulog("Initiate State Machine\n")              // log that we're starting
+		InitiateStateMachine(c)                       // initiate and pass in the channel
+		ulog("TGO MAIN THREAD: awaitin completion\n") // all in the hands of the state machine now
+		<-c                                           // wait til it's done
+		time.Sleep(time.Duration(1 * time.Second))    // grace period, let everything finish
 	}
 }

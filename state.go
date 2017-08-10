@@ -144,6 +144,7 @@ func PostExtendedStatusAndGetReply(iapp int, state string, r *StatusReply, mapna
 	}
 
 	rc, e := PostStatusExt(&s, r)
+	ulog("Received reply from Uhura\n")
 	if nil != e {
 		ulog("PostStatus returned error:  %v\n", e)
 		os.Exit(5)
@@ -159,6 +160,7 @@ func PostExtendedStatusAndGetReply(iapp int, state string, r *StatusReply, mapna
 		dPrintStatusReply(r)
 		os.Exit(4)
 	}
+	ulog("Got an OK from Uhura\n")
 }
 
 // activateCmd execs the supplied instance (only instance index is provided) with the
@@ -460,6 +462,8 @@ func StateOrchestrator(alldone chan int) {
 	case i := <-c:
 		ulog("Orchestrator: StateUnknown completed:  %d\n", i)
 		c <- 0 // tell the StateInit handler it's ok to exit
+	case <-time.After(1 * time.Minute):
+		ulog("Orchestrator: StateUnknown\n")
 	case <-time.After(30 * time.Minute):
 		ulog("Orchestrator: StateUnknown has not responded in 30 minutes. Giving up!\n")
 		// TODO:  tell uhura that startup has timed out
@@ -570,7 +574,10 @@ func InitiateStateMachine(alldone chan int) {
 		envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].UPort)
 	envMap.Instances[envMap.ThisInst].Apps[envMap.ThisApp].State = STATEInitializing
 	var r StatusReply
-	go UhuraComms()                                                     // handle anything that comes from uhura
+	ulog("Initiating communications with Uhura\n")
+	go UhuraComms() // handle anything that comes from uhura
+	ulog("*** STATE CHANGE ***  Sending INIT to Uhura\n")
 	PostExtendedStatusAndGetReply(envMap.ThisApp, "INIT", &r, nil, nil) // starting our state machine in the INIT state
+	ulog("Initiating StateOrchestrator\n")                              // turn it over to the orchestrator
 	go StateOrchestrator(alldone)                                       // let the orchestrator handle it from here
 }
