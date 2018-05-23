@@ -4,7 +4,7 @@
 # that it gets the responses it expects from uhura.
 
 UPORT=8150
-SCRIPTLOG="testlocal.log"
+SCRIPTLOG="functest.log"
 UVERBOSE=
 UDRYRUN="-n"
 ENV_DESCR="uhura_map.json"
@@ -18,6 +18,7 @@ shutdown() {
 #---------------------------------------------------------------------
 #  Find accord bin...
 #---------------------------------------------------------------------
+echo "Find accord/bin"
 if [ -d /usr/local/accord/bin ]; then
 	ACCORDBIN=/usr/local/accord/bin
 	TOOLS_DIR="/usr/local/accord/testtools"
@@ -33,6 +34,7 @@ fi
 #---------------------------------------------------------------------
 #  hard stance now... if uhura is running on our port, stop it first
 #---------------------------------------------------------------------
+echo "Stop any running instance of uhura"
 COUNT=$(ps -ef | grep uhura | grep -v grep | grep ${UPORT} | wc -l)
 if [ ${COUNT} -gt 0 ]; then
 	echo "*** NOTICE: attempting to stop uhura already running on port ${UPORT}..."
@@ -50,6 +52,12 @@ fi
 #  build machines. So, rather than try to always figure out the right path
 #  name to use, we use /tmp as that just always works.
 #---------------------------------------------------------------------
+echo "Launch accord/bin/uhura"
+if [ ! -f ${ACCORDBIN}/uhura ]; then
+	echo "${ACCORDBIN}/uhura does not exist. You must create it first."
+	exit 2;
+fi
+
 rm -f qm* *.log *.out
 cp ${ENV_DESCR} /tmp/
 echo "${ACCORDBIN}/uhura -p ${UPORT} -d ${UVERBOSE} ${UDRYRUN} -e /tmp/${ENV_DESCR} >uhura.out 2>&1 &" >>${SCRIPTLOG} 2>&1

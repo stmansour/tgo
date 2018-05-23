@@ -8,5 +8,5 @@ clean:
 	@echo "*** CLEAN COMPLETE in test/sys0 ***"
 
 test:
-	./testlocal.sh
+	./functest.sh
 	@echo "*** TEST COMPLETE - ALL TESTS PASSED in test/sys0 ***"
